@@ -7,11 +7,11 @@ class DrawerItem extends StatelessWidget {
   final Widget page;
 
   const DrawerItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.page,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

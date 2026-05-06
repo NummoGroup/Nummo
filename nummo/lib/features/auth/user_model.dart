@@ -1,20 +1,62 @@
-import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
-/// User model for authentication
-/// TODO(Sangu): Add fields like id, name, email, balance from Hive
-class User extends Equatable {
+part 'user_model.g.dart';
+
+@HiveType(typeId: 3)
+class User extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String email;
+
+  @HiveField(2)
   final String name;
 
-  const User({required this.id, required this.email, required this.name});
+  @HiveField(3)
+  final double balance;
+
+  User({
+    required this.id,
+    required this.email,
+    required this.name,
+    this.balance = 0.0,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    id: json['id'] as String,
+    email: json['email'] as String,
+    name: json['name'] as String,
+    balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'email': email,
+    'name': name,
+    'balance': balance,
+  };
+
+  User copyWith({String? id, String? email, String? name, double? balance}) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      balance: balance ?? this.balance,
+    );
+  }
 
   @override
-  List<Object?> get props => [id, email, name];
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          email == other.email &&
+          name == other.name &&
+          balance == other.balance;
 
-  // TODO: fromJson, toJson for Hive
-  factory User.fromJson(Map<String, dynamic> json) =>
-      User(id: json['id'], email: json['email'], name: json['name']);
-
-  Map<String, dynamic> toJson() => {'id': id, 'email': email, 'name': name};
+  @override
+  int get hashCode =>
+      id.hashCode ^ email.hashCode ^ name.hashCode ^ balance.hashCode;
 }
