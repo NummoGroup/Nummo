@@ -1,51 +1,48 @@
-import 'dart:async';
+
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
-import 'goal_model.dart';
+import 'goal_model.dart'; // Asegúrate de haber creado el modelo primero
 
 class GoalService {
-  static const String _boxName = 'goals';
-  late Box<GoalModel> _box;
-  final _uuid = const Uuid();
+  // Nombre de la caja (box) para Hive
+  static const String _boxName = 'goals_box';
 
-  final _goalsController = StreamController<List<GoalModel>>.broadcast();
-  Stream<List<GoalModel>> get goalsStream => _goalsController.stream;
+  // Abrir la caja de Hive
+  Future<Box<Goal>> get _box async => await Hive.openBox<Goal>(_boxName);
 
-  Future<void> init() async {
-    _box = await Hive.openBox<GoalModel>(_boxName);
-    _notify();
+  // CREAR: Guardar una nueva meta
+  Future<void> createGoal(Goal goal) async {
+    final box = await _box;
+    await box.put(goal.id, goal);
   }
 
-  Future<void> createGoal(GoalModel goal) async {
-    final newGoal = goal.copyWith(id: _uuid.v4());
-    await _box.put(newGoal.id, newGoal);
-    _notify();
+  // LEER: Obtener todas las metas guardadas
+  Future<List<Goal>> getGoals() async {
+    final box = await _box;
+    return box.values.toList();
   }
 
-  Future<void> updateProgress(String id, double amount) async {
-    final goal = _box.get(id);
-    if (goal != null) {
-      goal.currentAmount += amount;
-      await goal.save();
-      _notify();
+  // ACTUALIZAR: Modificar una meta existente (ej. actualizar el monto actual)
+  Future<void> updateGoal(Goal goal) async {
+    final box = await _box;
+    if (box.containsKey(goal.id)) {
+      await box.put(goal.id, goal);
     }
   }
 
+  // ELIMINAR: Borrar una meta por su ID
   Future<void> deleteGoal(String id) async {
-    await _box.delete(id);
-    _notify();
+    final box = await _box;
+    await box.delete(id);
   }
 
-  List<GoalModel> getAllGoals() {
-    return _box.values.toList();
-  }
-
-  void _notify() {
-    _goalsController.add(_box.values.toList());
-  }
-
-  Future<void> dispose() async {
-    await _goalsController.close();
-    await _box.close();
+  // LÓGICA DE INTERACCIÓN: Actualizar progreso desde ahorros
+  // Este método permite inyectar dinero de 'savings' a una meta específica
+  Future<void> addAmountToGoal(String id, double amount) async {
+    final box = await _box;
+    final goal = box.get(id);
+    if (goal != null) {
+      goal.currentAmount += amount;
+      await box.put(id, goal);
+    }
   }
 }
