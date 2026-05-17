@@ -119,6 +119,7 @@ class _MainScreenState extends State<MainScreen> {
     DashboardScreen(),
     GoalsScreen(),
     SavingsScreen(),
+    TransactionsScreen(),
   ];
 
   @override
@@ -133,6 +134,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.flag), label: 'Metas'),
           BottomNavigationBarItem(icon: Icon(Icons.savings), label: 'Ahorros'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long),
+            label: 'Movimientos',
+          ),
         ],
       ),
     );
