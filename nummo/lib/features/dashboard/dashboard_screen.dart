@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../transactions/transaction_provider.dart';
-import '../savings/savings_screen.dart'; 
+import '../transactions/transactions_screen.dart';
+import '../savings/savings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -10,19 +11,22 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Obtenemos los datos del provider
     final transactionProvider = context.watch<TransactionProvider>();
-    
+
     // Calculamos el total de gastos para mostrar en el centro
     final listaDeGastos = transactionProvider.expenses;
 
-// Sumamos los montos de todos los gastos en esa lista
-final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amount);
+    // Sumamos los montos de todos los gastos en esa lista
+    final double totalGastos = listaDeGastos.fold(
+      0.0,
+      (sum, item) => sum + item.amount,
+    );
     // Para el gráfico circular, calculamos un progreso basado en un presupuesto
     // Si no tienes presupuesto definido, puedes usar un valor estático o base 1000
-    double budget = 1000.0; 
+    double budget = 1000.0;
     double progress = (totalGastos / budget).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF81D4FA), 
+      backgroundColor: const Color(0xFF81D4FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -31,7 +35,7 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
           IconButton(
             icon: const Icon(Icons.person_outline, color: Colors.black),
             onPressed: () {},
-          )
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -48,8 +52,21 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('Gastos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                    Text('Ingresos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black54)),
+                    Text(
+                      'Gastos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Ingresos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -72,10 +89,12 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                         width: 200,
                         child: CircularProgressIndicator(
                           // Ahora el valor es dinámico según el gasto real
-                          value: progress, 
+                          value: progress,
                           strokeWidth: 35,
                           backgroundColor: Colors.pink[100],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF06292)),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFFF06292),
+                          ),
                         ),
                       ),
                       Column(
@@ -84,9 +103,15 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                           Text(
                             // Conectamos el total dinámico con 2 decimales
                             '\$${totalGastos.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          const Text('Total', style: TextStyle(color: Colors.black54)),
+                          const Text(
+                            'Total',
+                            style: TextStyle(color: Colors.black54),
+                          ),
                         ],
                       ),
                     ],
@@ -99,7 +124,12 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // Acción para abrir formulario de nuevo gasto
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TransactionsScreen(),
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.add),
                         label: const Text('Nuevo gasto'),
@@ -107,7 +137,9 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Colors.black26),
                           padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
                       ),
                     ),
@@ -117,37 +149,116 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const SavingsScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const SavingsScreen(),
+                            ),
                           );
                         },
                         icon: const Icon(Icons.savings_rounded),
                         label: const Text('Ver Ahorros'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF195B2), 
+                          backgroundColor: const Color(0xFFF195B2),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 35),
 
                 const Text(
                   'Gastos por categoría',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A237E)),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A237E),
+                  ),
                 ),
                 const SizedBox(height: 15),
 
-                // Generamos la lista de categorías dinámicamente desde el Provider
-                // Si tienes un mapa de categorías en tu provider, podrías usar un ListView aquí
-                _buildCategoryItem('Educación', const Color(0xFF91FFB5), '150.00'),
-                _buildCategoryItem('Comidas y bebidas', const Color(0xFFCE93D8), '230.50'),
-                _buildCategoryItem('Transporte', const Color(0xFFFF8A80), '45.00'),
-                
+                // Mostrar gastos por categoría a partir de las transacciones guardadas
+                Builder(
+                  builder: (context) {
+                    final expensesByCategory =
+                        transactionProvider.expensesByCategory;
+                    if (expensesByCategory.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Aún no hay gastos registrados por categoría.',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      );
+                    }
+
+                    final sortedEntries = expensesByCategory.entries.toList()
+                      ..sort((a, b) => b.value.compareTo(a.value));
+
+                    return Column(
+                      children: sortedEntries
+                          .map(
+                            (entry) => _buildCategoryItem(
+                              entry.key,
+                              _categoryColor(entry.key),
+                              entry.value.toStringAsFixed(2),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 30),
+
+                const Text(
+                  'Ingresos por categoría',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A237E),
+                  ),
+                ),
+                const SizedBox(height: 15),
+
+                // Mostrar ingresos por categoría a partir de las transacciones guardadas
+                Builder(
+                  builder: (context) {
+                    final incomesByCategory =
+                        transactionProvider.incomesByCategory;
+                    if (incomesByCategory.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Aún no hay ingresos registrados por categoría.',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      );
+                    }
+
+                    final sortedIncomeEntries =
+                        incomesByCategory.entries.toList()
+                          ..sort((a, b) => b.value.compareTo(a.value));
+
+                    return Column(
+                      children: sortedIncomeEntries
+                          .map(
+                            (entry) => _buildCategoryItem(
+                              entry.key,
+                              _categoryColor(entry.key),
+                              entry.value.toStringAsFixed(2),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
+
                 const SizedBox(height: 20),
               ],
             ),
@@ -164,8 +275,12 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 2))
-        ]
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -187,8 +302,32 @@ final double totalGastos = listaDeGastos.fold(0.0, (sum, item) => sum + item.amo
       child: ListTile(
         leading: CircleAvatar(backgroundColor: color, radius: 8),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-        trailing: Text('\$$amount', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        trailing: Text(
+          '\$$amount',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
       ),
     );
+  }
+
+  Color _categoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'comida':
+      case 'comidas y bebidas':
+        return const Color(0xFFCE93D8);
+      case 'transporte':
+        return const Color(0xFFFF8A80);
+      case 'renta':
+        return const Color(0xFF81D4FA);
+      case 'educación':
+      case 'educacion':
+        return const Color(0xFF91FFB5);
+      case 'salario':
+        return const Color(0xFF80CBC4);
+      case 'ahorros':
+        return const Color(0xFF4DB6AC);
+      default:
+        return const Color(0xFF90A4AE);
+    }
   }
 }

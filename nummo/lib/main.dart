@@ -35,7 +35,9 @@ void main() async {
 
   // Registrar adapters
   Hive.registerAdapter(GoalModelAdapter());
-  Hive.registerAdapter(SavingsAdapter()); // Asegurate que este es el que usa el typeId: 4
+  Hive.registerAdapter(
+    SavingsAdapter(),
+  ); // Asegurate que este es el que usa el typeId: 4
   Hive.registerAdapter(TransactionModelAdapter());
   Hive.registerAdapter(UserAdapter());
 
@@ -43,7 +45,8 @@ void main() async {
   final authService = AuthService();
   final goalService = GoalService();
   final savingsService = SavingsService();
-  final transactionService = TransactionService();
+  final transactionService = HiveTransactionService();
+  await transactionService.init();
 
   await dumpHiveToConsole();
 
@@ -71,9 +74,9 @@ class NummoApp extends StatelessWidget {
       title: 'Nummo',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      // CORRECCIÓN: Solo una propiedad 'home'. 
+      // CORRECCIÓN: Solo una propiedad 'home'.
       // Usamos SavingsScreen directamente para que puedas ver los cambios.
-      home: const AuthWrapper(), 
+      home: const AuthWrapper(),
       // home: const AuthWrapper(), // Descomenta esta línea cuando quieras volver al flujo normal
       routes: {
         '/welcome': (context) => const WelcomeScreen(),
@@ -116,7 +119,6 @@ class _MainScreenState extends State<MainScreen> {
     DashboardScreen(),
     GoalsScreen(),
     SavingsScreen(),
-    TransactionsScreen(),
   ];
 
   @override
@@ -131,10 +133,6 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.flag), label: 'Metas'),
           BottomNavigationBarItem(icon: Icon(Icons.savings), label: 'Ahorros'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: 'Movimientos',
-          ),
         ],
       ),
     );

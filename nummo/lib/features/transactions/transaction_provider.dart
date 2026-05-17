@@ -1,59 +1,69 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'transaction_model.dart';
 import 'transaction_service.dart';
 
 class TransactionProvider extends ChangeNotifier {
   final TransactionService _service;
-  List<TransactionModel> _transactions = [];
-  bool _isLoading = false;
-  StreamSubscription? _subscription;
+  final List<TransactionModel> transactions = [];
 
-  List<TransactionModel> get transactions => _transactions;
-  bool get isLoading => _isLoading;
+  TransactionProvider(this._service);
 
-  double get balance => _service.balance;
-
-  List<TransactionModel> get incomes =>
-      _transactions.where((t) => t.type == 'income').toList();
-
-  List<TransactionModel> get expenses =>
-      _transactions.where((t) => t.type == 'expense').toList();
-
-  TransactionProvider(this._service) {
-    _init();
-  }
-
-  Future<void> _init() async {
-    _setLoading(true);
+  Future<void> init() async {
     await _service.init();
-    _transactions = _service.getAllTransactions();
-    _subscription = _service.transactionsStream.listen((transactions) {
-      _transactions = transactions;
-      notifyListeners();
-    });
-    _setLoading(false);
+    await _loadTransactions();
   }
 
-  Future<void> addTransaction(TransactionModel transaction) async {
-    _setLoading(true);
-    await _service.addTransaction(transaction);
-    _setLoading(false);
-  }
-
-  Future<void> deleteTransaction(String id) async {
-    await _service.deleteTransaction(id);
-  }
-
-  void _setLoading(bool value) {
-    _isLoading = value;
+  Future<void> _loadTransactions() async {
+    transactions.clear();
+    final stored = await _service.getTransactions();
+    transactions.addAll(stored);
     notifyListeners();
   }
 
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    _service.dispose();
-    super.dispose();
+  Future<void> addTransaction(TransactionModel transaction) async {
+    await _service.addTransaction(transaction);
+    transactions.add(transaction);
+    notifyListeners();
+    try {
+      print(
+        'TransactionProvider: added transaction ${transaction.id} amount=${transaction.amount}',
+      );
+    } catch (_) {}
+  }
+
+  List<TransactionModel> get incomes =>
+      transactions.where((transaction) => transaction.isIncome).toList();
+
+  List<TransactionModel> get expenses =>
+      transactions.where((transaction) => transaction.isExpense).toList();
+
+  double get totalIncome =>
+      incomes.fold(0.0, (sum, transaction) => sum + transaction.amount);
+
+  double get totalExpense =>
+      expenses.fold(0.0, (sum, transaction) => sum + transaction.amount);
+
+  int get incomeCount => incomes.length;
+
+  int get expenseCount => expenses.length;
+
+  double get balance => totalIncome - totalExpense;
+
+  Map<String, double> get incomesByCategory {
+    final Map<String, double> categoryTotals = {};
+    for (final transaction in incomes) {
+      categoryTotals[transaction.category] =
+          (categoryTotals[transaction.category] ?? 0) + transaction.amount;
+    }
+    return categoryTotals;
+  }
+
+  Map<String, double> get expensesByCategory {
+    final Map<String, double> categoryTotals = {};
+    for (final transaction in expenses) {
+      categoryTotals[transaction.category] =
+          (categoryTotals[transaction.category] ?? 0) + transaction.amount;
+    }
+    return categoryTotals;
   }
 }

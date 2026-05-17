@@ -21,7 +21,7 @@ class UserAdapter extends TypeAdapter<User> {
       email: fields[1] as String,
       name: fields[2] as String,
       balance: fields[3] as double,
-      password: fields[4] as String? ?? '',
+      password: fields[4] as String,
     );
   }
 
