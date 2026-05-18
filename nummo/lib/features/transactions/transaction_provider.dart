@@ -53,8 +53,6 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<void> addTransaction(TransactionModel transaction) async {
     await _service.addTransaction(transaction);
-    transactions.add(transaction);
-    notifyListeners();
     try {
       print(
         'TransactionProvider: added transaction ${transaction.id} amount=${transaction.amount}',
