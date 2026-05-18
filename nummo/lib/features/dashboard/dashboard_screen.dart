@@ -1,4 +1,4 @@
-import 'dart:math' show pi; 
+import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../transactions/transaction_provider.dart';
@@ -21,14 +21,33 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _mostrarGastos = true;
 
-  String _selectedMonth = 'Julio';
-  String _selectedYear = '2026';
+  late String _selectedMonth;
+  late String _selectedYear;
 
   final List<String> _months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
-  final List<String> _years = ['2024', '2025', '2026', '2027'];
+  late final List<String> _years;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = _months[now.month - 1];
+    _years = List.generate(6, (index) => (now.year - 2 + index).toString());
+    _selectedYear = now.year.toString();
+  }
 
   // Función para pasar del mes en texto al número (ej: 'Julio' -> 7)
   int _getMonthNumber(String month) {
@@ -51,17 +70,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Map<String, double> dataByCategory = {};
 
     for (var t in filteredTransactions) {
-      bool isTargetType = _mostrarGastos ? t.type == 'expense' : t.type == 'income';
-      
+      bool isTargetType = _mostrarGastos
+          ? t.type == 'expense'
+          : t.type == 'income';
+
       if (isTargetType) {
         totalAmount += t.amount;
-        dataByCategory[t.category] = (dataByCategory[t.category] ?? 0.0) + t.amount;
+        dataByCategory[t.category] =
+            (dataByCategory[t.category] ?? 0.0) + t.amount;
       }
     }
 
     return Scaffold(
       backgroundColor: const Color(0xFF81D4FA),
-      drawer: _buildDrawer(context), 
+      drawer: _buildDrawer(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -72,9 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
               );
             },
           ),
@@ -118,7 +138,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: !_mostrarGastos ? Colors.black : Colors.black54,
+                          color: !_mostrarGastos
+                              ? Colors.black
+                              : Colors.black54,
                         ),
                       ),
                     ),
@@ -147,7 +169,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             dataByCategory: dataByCategory,
                             total: totalAmount,
                             getColor: _categoryColor,
-                            defaultColor: _mostrarGastos ? Colors.pink[100]! : Colors.green[100]!,
+                            defaultColor: _mostrarGastos
+                                ? Colors.pink[100]!
+                                : Colors.green[100]!,
                           ),
                         ),
                       ),
@@ -185,7 +209,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           );
                         },
                         icon: const Icon(Icons.add),
-                        label: Text(_mostrarGastos ? 'Nuevo gasto' : 'Nuevo ingreso'),
+                        label: Text(
+                          _mostrarGastos ? 'Nuevo gasto' : 'Nuevo ingreso',
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Colors.black26),
@@ -226,7 +252,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 35),
 
                 Text(
-                  _mostrarGastos ? 'Gastos por categoría' : 'Ingresos por categoría',
+                  _mostrarGastos
+                      ? 'Gastos por categoría'
+                      : 'Ingresos por categoría',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -239,7 +267,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
-                      _mostrarGastos 
+                      _mostrarGastos
                           ? 'Aún no hay gastos registrados en este mes.'
                           : 'Aún no hay ingresos registrados en este mes.',
                       style: const TextStyle(color: Colors.black54),
@@ -247,15 +275,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   )
                 else
                   Column(
-                    children: (dataByCategory.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
-                        .map(
-                          (entry) => _buildCategoryItem(
-                            entry.key,
-                            _categoryColor(entry.key),
-                            entry.value.toStringAsFixed(2),
-                          ),
-                        )
-                        .toList(),
+                    children:
+                        (dataByCategory.entries.toList()
+                              ..sort((a, b) => b.value.compareTo(a.value)))
+                            .map(
+                              (entry) => _buildCategoryItem(
+                                entry.key,
+                                _categoryColor(entry.key),
+                                entry.value.toStringAsFixed(2),
+                              ),
+                            )
+                            .toList(),
                   ),
 
                 const SizedBox(height: 20),
@@ -267,7 +297,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  
   Widget _buildMonthDropdown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -286,7 +315,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: DropdownButton<String>(
           value: _selectedMonth,
           icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-          style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
           onChanged: (String? newValue) {
             if (newValue != null) {
               setState(() => _selectedMonth = newValue);
@@ -318,7 +350,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: DropdownButton<String>(
           value: _selectedYear,
           icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-          style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
           onChanged: (String? newValue) {
             if (newValue != null) {
               setState(() => _selectedYear = newValue);
@@ -331,7 +366,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
@@ -347,12 +381,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.account_balance_wallet, size: 35, color: Color(0xFF1A237E)),
+                  child: Icon(
+                    Icons.account_balance_wallet,
+                    size: 35,
+                    color: Color(0xFF1A237E),
+                  ),
                 ),
                 SizedBox(height: 10),
                 Text(
                   'Menú Nummo',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ],
             ),
@@ -362,7 +404,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Gráficos'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ChartsScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChartsScreen()),
+              );
             },
           ),
           ListTile(
@@ -370,7 +415,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Recordatorios'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const RemindersScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RemindersScreen(),
+                ),
+              );
             },
           ),
           ListTile(
@@ -378,7 +428,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Configuración'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
             },
           ),
           ListTile(
@@ -386,7 +439,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Ayuda'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpScreen()),
+              );
             },
           ),
         ],
@@ -452,7 +508,7 @@ class PieChartPainter extends CustomPainter {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 35 
+      ..strokeWidth = 35
       ..strokeCap = StrokeCap.butt;
 
     if (total == 0 || dataByCategory.isEmpty) {
@@ -461,12 +517,12 @@ class PieChartPainter extends CustomPainter {
       return;
     }
 
-    double startAngle = -pi / 2; 
+    double startAngle = -pi / 2;
 
     dataByCategory.forEach((category, amount) {
       final sweepAngle = (amount / total) * 2 * pi;
       paint.color = getColor(category);
-      
+
       canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
       startAngle += sweepAngle;
     });
