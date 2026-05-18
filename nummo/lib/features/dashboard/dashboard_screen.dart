@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../transactions/transaction_provider.dart';
 import '../transactions/transactions_screen.dart';
 import '../savings/savings_screen.dart';
-
 import 'menu_screens/charts_screen.dart';
 import 'menu_screens/help_screen.dart';
 import 'menu_screens/profile_screen.dart';
@@ -82,7 +81,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF81D4FA),
       drawer: _buildDrawer(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -236,7 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         icon: const Icon(Icons.savings_rounded),
                         label: const Text('Ver Ahorros'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF195B2),
+                          backgroundColor: const Color(0xFF81D4FA),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 15),
