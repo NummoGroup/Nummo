@@ -18,4 +18,3 @@ class CardWidget extends StatelessWidget {
   }
 }
 
-// TODO(Mora): Customize styles

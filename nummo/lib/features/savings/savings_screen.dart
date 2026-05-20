@@ -22,8 +22,10 @@ class SavingsScreen extends StatelessWidget {
                 children: [
                   _buildHeader(context),
                   const SizedBox(height: 32),
-                  _buildSavingsCard(context, provider),
-                  const SizedBox(height: 32),
+                  Center(
+                    child:_buildSavingsCard(context, provider),
+                  ),
+                  
                   _buildAddMoneyCard(context, provider),
                   if (provider.depositHistory.isNotEmpty) ...[
                     const SizedBox(height: 32),

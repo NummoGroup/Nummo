@@ -1,47 +1,105 @@
+import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../transactions/transaction_provider.dart';
 import '../transactions/transactions_screen.dart';
 import '../savings/savings_screen.dart';
+import 'menu_screens/charts_screen.dart';
+import 'menu_screens/help_screen.dart';
+import 'menu_screens/profile_screen.dart';
+import 'menu_screens/reminders_screen.dart';
+import 'menu_screens/settings_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  bool _mostrarGastos = true;
+
+  late String _selectedMonth;
+  late String _selectedYear;
+
+  final List<String> _months = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
+  late final List<String> _years;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = _months[now.month - 1];
+    _years = List.generate(6, (index) => (now.year - 2 + index).toString());
+    _selectedYear = now.year.toString();
+  }
+
+  // Función para pasar del mes en texto al número (ej: 'Julio' -> 7)
+  int _getMonthNumber(String month) {
+    return _months.indexOf(month) + 1;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Obtenemos los datos del provider
     final transactionProvider = context.watch<TransactionProvider>();
+    final allTransactions = transactionProvider.transactions;
 
-    // Calculamos el total de gastos para mostrar en el centro
-    final listaDeGastos = transactionProvider.expenses;
+    final selectedMonthNum = _getMonthNumber(_selectedMonth);
+    final selectedYearNum = int.parse(_selectedYear);
 
-    // Sumamos los montos de todos los gastos en esa lista
-    final double totalGastos = listaDeGastos.fold(
-      0.0,
-      (sum, item) => sum + item.amount,
-    );
-    // Para el gráfico circular, calculamos un progreso basado en un presupuesto
-    // Si no tienes presupuesto definido, puedes usar un valor estático o base 1000
-    double budget = 1000.0;
-    double progress = (totalGastos / budget).clamp(0.0, 1.0);
+    final filteredTransactions = allTransactions.where((t) {
+      return t.date.month == selectedMonthNum && t.date.year == selectedYearNum;
+    }).toList();
+
+    double totalAmount = 0.0;
+    Map<String, double> dataByCategory = {};
+
+    for (var t in filteredTransactions) {
+      bool isTargetType = _mostrarGastos
+          ? t.type == 'expense'
+          : t.type == 'income';
+
+      if (isTargetType) {
+        totalAmount += t.amount;
+        dataByCategory[t.category] =
+            (dataByCategory[t.category] ?? 0.0) + t.amount;
+      }
+    }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF81D4FA),
+      drawer: _buildDrawer(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Icon(Icons.menu, color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
             icon: const Icon(Icons.person_outline, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // Si implementas carga desde base de datos remota, iría aquí
-        },
+        onRefresh: () async {},
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
@@ -49,22 +107,39 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text(
-                      'Gastos',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _mostrarGastos = true;
+                        });
+                      },
+                      child: Text(
+                        'Gastos',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: _mostrarGastos ? Colors.black : Colors.black54,
+                        ),
                       ),
                     ),
-                    Text(
-                      'Ingresos',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _mostrarGastos = false;
+                        });
+                      },
+                      child: Text(
+                        'Ingresos',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: !_mostrarGastos
+                              ? Colors.black
+                              : Colors.black54,
+                        ),
                       ),
                     ),
                   ],
@@ -73,9 +148,9 @@ class DashboardScreen extends StatelessWidget {
 
                 Row(
                   children: [
-                    _buildDropdown('Julio'),
+                    _buildMonthDropdown(),
                     const SizedBox(width: 10),
-                    _buildDropdown('2026'),
+                    _buildYearDropdown(),
                   ],
                 ),
                 const SizedBox(height: 30),
@@ -87,13 +162,14 @@ class DashboardScreen extends StatelessWidget {
                       SizedBox(
                         height: 200,
                         width: 200,
-                        child: CircularProgressIndicator(
-                          // Ahora el valor es dinámico según el gasto real
-                          value: progress,
-                          strokeWidth: 35,
-                          backgroundColor: Colors.pink[100],
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFF06292),
+                        child: CustomPaint(
+                          painter: PieChartPainter(
+                            dataByCategory: dataByCategory,
+                            total: totalAmount,
+                            getColor: _categoryColor,
+                            defaultColor: _mostrarGastos
+                                ? Colors.pink[100]!
+                                : Colors.green[100]!,
                           ),
                         ),
                       ),
@@ -101,8 +177,7 @@ class DashboardScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            // Conectamos el total dinámico con 2 decimales
-                            '\$${totalGastos.toStringAsFixed(2)}',
+                            '\$${totalAmount.toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -132,7 +207,9 @@ class DashboardScreen extends StatelessWidget {
                           );
                         },
                         icon: const Icon(Icons.add),
-                        label: const Text('Nuevo gasto'),
+                        label: Text(
+                          _mostrarGastos ? 'Nuevo gasto' : 'Nuevo ingreso',
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Colors.black26),
@@ -157,7 +234,7 @@ class DashboardScreen extends StatelessWidget {
                         icon: const Icon(Icons.savings_rounded),
                         label: const Text('Ver Ahorros'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF195B2),
+                          backgroundColor: const Color(0xFF81D4FA),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 15),
@@ -172,9 +249,11 @@ class DashboardScreen extends StatelessWidget {
 
                 const SizedBox(height: 35),
 
-                const Text(
-                  'Gastos por categoría',
-                  style: TextStyle(
+                Text(
+                  _mostrarGastos
+                      ? 'Gastos por categoría'
+                      : 'Ingresos por categoría',
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1A237E),
@@ -182,82 +261,30 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
 
-                // Mostrar gastos por categoría a partir de las transacciones guardadas
-                Builder(
-                  builder: (context) {
-                    final expensesByCategory =
-                        transactionProvider.expensesByCategory;
-                    if (expensesByCategory.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text(
-                          'Aún no hay gastos registrados por categoría.',
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      );
-                    }
-
-                    final sortedEntries = expensesByCategory.entries.toList()
-                      ..sort((a, b) => b.value.compareTo(a.value));
-
-                    return Column(
-                      children: sortedEntries
-                          .map(
-                            (entry) => _buildCategoryItem(
-                              entry.key,
-                              _categoryColor(entry.key),
-                              entry.value.toStringAsFixed(2),
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 30),
-
-                const Text(
-                  'Ingresos por categoría',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A237E),
+                if (dataByCategory.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      _mostrarGastos
+                          ? 'Aún no hay gastos registrados en este mes.'
+                          : 'Aún no hay ingresos registrados en este mes.',
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  )
+                else
+                  Column(
+                    children:
+                        (dataByCategory.entries.toList()
+                              ..sort((a, b) => b.value.compareTo(a.value)))
+                            .map(
+                              (entry) => _buildCategoryItem(
+                                entry.key,
+                                _categoryColor(entry.key),
+                                entry.value.toStringAsFixed(2),
+                              ),
+                            )
+                            .toList(),
                   ),
-                ),
-                const SizedBox(height: 15),
-
-                // Mostrar ingresos por categoría a partir de las transacciones guardadas
-                Builder(
-                  builder: (context) {
-                    final incomesByCategory =
-                        transactionProvider.incomesByCategory;
-                    if (incomesByCategory.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text(
-                          'Aún no hay ingresos registrados por categoría.',
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      );
-                    }
-
-                    final sortedIncomeEntries =
-                        incomesByCategory.entries.toList()
-                          ..sort((a, b) => b.value.compareTo(a.value));
-
-                    return Column(
-                      children: sortedIncomeEntries
-                          .map(
-                            (entry) => _buildCategoryItem(
-                              entry.key,
-                              _categoryColor(entry.key),
-                              entry.value.toStringAsFixed(2),
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
 
                 const SizedBox(height: 20),
               ],
@@ -268,9 +295,9 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDropdown(String text) {
+  Widget _buildMonthDropdown() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -282,11 +309,140 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedMonth,
+          icon: const Icon(Icons.keyboard_arrow_down, size: 20),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() => _selectedMonth = newValue);
+            }
+          },
+          items: _months.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(value: value, child: Text(value));
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildYearDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedYear,
+          icon: const Icon(Icons.keyboard_arrow_down, size: 20),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() => _selectedYear = newValue);
+            }
+          },
+          items: _years.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(value: value, child: Text(value));
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          Text(text, style: const TextStyle(fontWeight: FontWeight.w500)),
-          const SizedBox(width: 5),
-          const Icon(Icons.keyboard_arrow_down, size: 20),
+          const DrawerHeader(
+            decoration: BoxDecoration(color: Color(0xFF81D4FA)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.account_balance_wallet,
+                    size: 35,
+                    color: Color(0xFF1A237E),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Menú Nummo',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.bar_chart),
+            title: const Text('Gráficos'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChartsScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Recordatorios'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RemindersScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Configuración'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Ayuda'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpScreen()),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -318,7 +474,7 @@ class DashboardScreen extends StatelessWidget {
       case 'transporte':
         return const Color(0xFFFF8A80);
       case 'renta':
-        return const Color(0xFF81D4FA);
+        return const Color.fromARGB(255, 67, 124, 150);
       case 'educación':
       case 'educacion':
         return const Color(0xFF91FFB5);
@@ -330,4 +486,46 @@ class DashboardScreen extends StatelessWidget {
         return const Color(0xFF90A4AE);
     }
   }
+}
+
+class PieChartPainter extends CustomPainter {
+  final Map<String, double> dataByCategory;
+  final double total;
+  final Color Function(String) getColor;
+  final Color defaultColor;
+
+  PieChartPainter({
+    required this.dataByCategory,
+    required this.total,
+    required this.getColor,
+    required this.defaultColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 35
+      ..strokeCap = StrokeCap.butt;
+
+    if (total == 0 || dataByCategory.isEmpty) {
+      paint.color = defaultColor;
+      canvas.drawArc(rect, 0, 2 * pi, false, paint);
+      return;
+    }
+
+    double startAngle = -pi / 2;
+
+    dataByCategory.forEach((category, amount) {
+      final sweepAngle = (amount / total) * 2 * pi;
+      paint.color = getColor(category);
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+      startAngle += sweepAngle;
+    });
+  }
+
+  @override
+  bool shouldRepaint(covariant PieChartPainter oldDelegate) => true;
 }
