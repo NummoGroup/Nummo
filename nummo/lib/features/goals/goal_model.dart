@@ -89,3 +89,19 @@ class GoalModel extends HiveObject {
     );
   }
 }
+
+class MilestoneEvent {
+  final String goalId;
+  final String goalTitle;
+  final int milestoneIndex;
+  final int totalMilestones;
+  final bool isComplete;
+
+  MilestoneEvent({
+    required this.goalId,
+    required this.goalTitle,
+    required this.milestoneIndex,
+    required this.totalMilestones,
+    required this.isComplete,
+  });
+}

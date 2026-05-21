@@ -9,8 +9,15 @@ class GoalProvider extends ChangeNotifier {
   bool _isLoading = false;
   StreamSubscription? _subscription;
 
+  MilestoneEvent? _milestoneEvent;
+  bool _showCelebration = false;
+  String? _celebrationGoalTitle;
+
   List<GoalModel> get goals => _goals;
   bool get isLoading => _isLoading;
+  MilestoneEvent? get milestoneEvent => _milestoneEvent;
+  bool get showCelebration => _showCelebration;
+  String? get celebrationGoalTitle => _celebrationGoalTitle;
 
   GoalProvider(this._service) {
     _init();
@@ -34,7 +41,48 @@ class GoalProvider extends ChangeNotifier {
   }
 
   Future<void> updateGoalProgress(String id, double amount) async {
+    final oldReached = _getGoalReachedCount(id);
+    if (oldReached == null) return;
+
     await _service.updateProgress(id, amount);
+
+    final updatedReached = _getGoalReachedCount(id);
+    if (updatedReached == null) return;
+
+    if (updatedReached > oldReached) {
+      final goal = _goals.firstWhere((g) => g.id == id);
+      _milestoneEvent = MilestoneEvent(
+        goalId: id,
+        goalTitle: goal.title,
+        milestoneIndex: updatedReached - 1,
+        totalMilestones: goal.milestonesCount,
+        isComplete: goal.isCompleted,
+      );
+      if (goal.isCompleted) {
+        _showCelebration = true;
+        _celebrationGoalTitle = goal.title;
+      }
+      notifyListeners();
+    }
+  }
+
+  void consumeMilestoneEvent() {
+    _milestoneEvent = null;
+    notifyListeners();
+  }
+
+  void dismissCelebration() {
+    _showCelebration = false;
+    _celebrationGoalTitle = null;
+    notifyListeners();
+  }
+
+  int? _getGoalReachedCount(String id) {
+    try {
+      return _goals.firstWhere((g) => g.id == id).reachedMilestonesCount;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> deleteGoal(String id) async {
