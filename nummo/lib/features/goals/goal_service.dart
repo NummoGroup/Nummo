@@ -24,9 +24,48 @@ class GoalService {
 
   Future<void> updateProgress(String id, double amount) async {
     final goal = _box.get(id);
-    if (goal != null) {
-      goal.currentAmount += amount;
-      await goal.save();
+    if (goal == null) return;
+
+    final previousMilestoneCount = goal.reachedMilestonesCount;
+    final previousProgress = goal.progressPercentage;
+
+    goal.currentAmount += amount;
+
+    // Recalcular hitos alcanzados según el progreso.
+    // milestonesCount incluye la meta final.
+    // Ej: milestonesCount=4 => umbrales 25%, 50%, 75%, 100%.
+    final safeMilestones = goal.milestonesCount < 4 ? 4 : goal.milestonesCount;
+
+    double newProgress = goal.progressPercentage;
+
+    int newReached;
+    if (goal.targetAmount <= 0) {
+      newReached = 0;
+    } else {
+      // Cuántos umbrales <= progreso actual.
+      // Umbral i (1..safeMilestones) => i/safeMilestones
+      newReached = (newProgress * safeMilestones).floor();
+      newReached = newReached.clamp(0, safeMilestones);
+      // Si newProgress es exactamente 1.0, floor(1*safeMilestones)=safeMilestones.
+    }
+
+    // Guardar milestonesCount por consistencia (si venía mal).
+    if (goal.milestonesCount != safeMilestones) {
+      // milestonesCount es final, así que no lo podemos cambiar aquí.
+      // En caso de datos viejos, forzamos interpretación con safeMilestones
+      // dejando milestonesCount como estaba.
+    }
+
+    // alcanzamos 0..milestonesCount
+    goal.reachedMilestonesCount = newReached;
+
+    await goal.save();
+    // Opcional: se podría emitir un evento si newReached > previousMilestoneCount.
+    // Por ahora solo persistimos, la UI detecta el estado.
+    if (goal.progressPercentage != previousProgress ||
+        newReached != previousMilestoneCount) {
+      _notify();
+    } else {
       _notify();
     }
   }

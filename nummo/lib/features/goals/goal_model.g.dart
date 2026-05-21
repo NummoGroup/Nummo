@@ -21,14 +21,16 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       title: fields[1] as String,
       targetAmount: fields[2] as double,
       currentAmount: fields[3] as double,
-      deadline: fields[4] as DateTime,
+      milestonesCount: (fields[4] as num?)?.toInt() ?? 4,
+      deadline: fields[5] == null ? null : fields[5] as DateTime,
+      reachedMilestonesCount: (fields[6] as num?)?.toInt() ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, GoalModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       ..writeByte(3)
       ..write(obj.currentAmount)
       ..writeByte(4)
-      ..write(obj.deadline);
+      ..write(obj.milestonesCount)
+      ..writeByte(5)
+      ..write(obj.deadline)
+      ..writeByte(6)
+      ..write(obj.reachedMilestonesCount);
   }
 
   @override
