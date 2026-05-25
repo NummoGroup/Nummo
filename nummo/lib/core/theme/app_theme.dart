@@ -6,7 +6,7 @@ class AppTheme {
   static const double _borderRadius = 16.0;
 
   // Paleta de Colores - Modo Claro
-  static const Color _lightPrimary = Color(0xFF1A237E);    // Azul profundo institucional
+  static const Color _lightPrimary = Color.fromARGB(255, 47, 189, 255);    // Azul profundo institucional
   static const Color _lightSecondary = Color(0xFFF06292);  // Rosa energético para gamificación
   static const Color _lightAccent = Color(0xFF81D4FA);     // Celeste claro para balances
   static const Color _lightBackground = Color(0xFFF8F9FA); // Gris neutro muy limpio
@@ -29,14 +29,12 @@ class AppTheme {
       primary: _lightPrimary,
       secondary: _lightSecondary,
       tertiary: _lightAccent,
-      background: _lightBackground,
       surface: Colors.white,
     ),
 
-    // Tipografía unificada (Lexend es ideal para números y finanzas)
-    textTheme: GoogleFonts.lexendTextTheme(ThemeData.light().textTheme).copyWith(
-      headlineMedium: GoogleFonts.lexend(fontWeight: FontWeight.bold, color: _lightPrimary),
-      titleLarge: GoogleFonts.lexend(fontWeight: FontWeight.w600, color: _lightPrimary),
+    textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.light().textTheme).copyWith(
+      headlineMedium: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold, color: _lightPrimary),
+      titleLarge: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, color: _lightPrimary),
     ),
 
     // AppBar limpio, plano y transparente por defecto
@@ -72,7 +70,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_borderRadius),
         ),
-        textStyle: GoogleFonts.lexend(
+        textStyle: GoogleFonts.spaceGrotesk(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -88,7 +86,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_borderRadius),
         ),
-        textStyle: GoogleFonts.lexend(
+        textStyle: GoogleFonts.spaceGrotesk(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -119,11 +117,10 @@ class AppTheme {
       brightness: Brightness.dark,
       primary: _darkPrimary,
       secondary: _darkSecondary,
-      background: _darkBackground,
       surface: const Color(0xFF1E1E1E),
     ),
 
-    textTheme: GoogleFonts.lexendTextTheme(ThemeData.dark().textTheme),
+    textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.dark().textTheme),
 
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
