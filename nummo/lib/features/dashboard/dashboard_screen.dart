@@ -85,10 +85,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Theme.of(context).textTheme.bodyLarge?.color),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline, color: Colors.black),
+            icon: Icon(
+              Icons.person_outline,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -121,7 +124,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: _mostrarGastos ? Colors.black : Colors.black54,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                     ),
@@ -136,9 +139,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: !_mostrarGastos
-                              ? Colors.black
-                              : Colors.black54,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                     ),
@@ -211,7 +212,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos ? 'Nuevo gasto' : 'Nuevo ingreso',
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
+                          foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
                           side: const BorderSide(color: Colors.black26),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(

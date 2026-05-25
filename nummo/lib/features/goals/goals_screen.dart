@@ -10,7 +10,12 @@ class GoalsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Metas')),
+      appBar: AppBar(
+        title: Text(
+          'Metas',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateGoalDialog(context),
         icon: const Icon(Icons.add),

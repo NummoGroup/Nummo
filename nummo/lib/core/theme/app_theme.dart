@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
   // Constantes de diseño para mantener la consistencia (Bordes premium)
   static const double _borderRadius = 16.0;
 

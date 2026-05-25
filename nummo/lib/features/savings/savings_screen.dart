@@ -10,7 +10,12 @@ class SavingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ahorros XP')),
+      appBar: AppBar(
+        title: Text(
+          'Ahorros XP',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+      ),
       body: SafeArea(
         child: Consumer<GoalProvider>(
           builder: (context, goalProvider, _) {

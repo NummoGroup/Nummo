@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nummo/core/theme/app_theme.dart';
 import 'package:nummo/features/dashboard/menu_screens/profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -11,7 +12,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
   //bool _biometricEnabled = false;
-  bool _darkModeEnabled = false;
+  //bool _darkModeEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración'),
+        title: Text(
+          'Configuración',
+          style: Theme.of(context).textTheme.titleLarge,
+          ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -95,13 +99,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 secondary: Icon(Icons.dark_mode_outlined, color: theme.colorScheme.primary),
                 title: const Text('Modo Oscuro'),
                 subtitle: const Text('Forzar aspecto oscuro en la interfaz'),
-                value: _darkModeEnabled,
+                value: AppTheme.themeNotifier.value == ThemeMode.dark, 
                 activeColor: theme.colorScheme.secondary,
                 onChanged: (bool value) {
-                  setState(() {
-                    _darkModeEnabled = value;
-                  });
-                  // TODO: ACCIÓN - Disparar evento para cambiar el ThemeMode global
+                  AppTheme.themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                  
+                  setState(() {}); 
                 },
               ),
             ],
