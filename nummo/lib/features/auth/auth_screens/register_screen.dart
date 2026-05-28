@@ -66,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF8DE2FF),
+      backgroundColor: const Color(0xFF1E1E2C),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -76,26 +76,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Crear Cuenta:',
-                  style: GoogleFonts.lexend(
+                  'Crear cuenta:',
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
               ),
               
               const SizedBox(height: 40),
 
-              CustomButton(
-                text: 'Registrarse con Google',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Próximamente...')),
-                  );
-                },
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Próximamente...')),
+                    );
+                  },
+                  child: Text(
+                    'Registrarse con Google',
+                    style: GoogleFonts.lexend(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
               ),
-              
+              ),
               const SizedBox(height: 40),
 
               CustomInputField(
@@ -151,10 +160,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               const SizedBox(height: 16),
               
-              CustomButton(
+              /*CustomButton(
                 text: 'Volver',
                 onPressed: () => Navigator.pop(context),
-              ),
+              ),*/
             ],
           ),
         ),

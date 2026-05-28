@@ -70,23 +70,31 @@ class NummoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Nummo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      // CORRECCIÓN: Solo una propiedad 'home'.
-      // Usamos SavingsScreen directamente para que puedas ver los cambios.
-      home: const AuthWrapper(),
-      // home: const AuthWrapper(), // Descomenta esta línea cuando quieras volver al flujo normal
-      routes: {
-        '/welcome': (context) => const WelcomeScreen(),
-        '/dashboard': (context) => const MainScreen(),
+    
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (_, ThemeMode currentMode, __) {
+        return MaterialApp(
+          title: 'Nummo',
+          debugShowCheckedModeBanner: false,
+          
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode, // Esto cambia en tiempo real
+          
+
+          home: const AuthWrapper(),
+          // home: const AuthWrapper(), // Descomenta esta línea cuando quieras volver al flujo normal
+          routes: {
+            '/welcome': (context) => const WelcomeScreen(),
+            '/dashboard': (context) => const MainScreen(),
+          },
+        );
       },
     );
   }
 }
 
-/// AuthWrapper decide si mostrar Welcome o la app principal
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -104,7 +112,6 @@ class AuthWrapper extends StatelessWidget {
   }
 }
 
-/// MainScreen con BottomNavigationBar para las pantallas principales
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
