@@ -89,8 +89,10 @@ class SavingsScreen extends StatelessWidget {
   }
 
   String _milestonePopupMessage(MilestoneEvent e) {
-    if (e.isComplete) return '¡Felicidades! Completaste "${e.goalTitle}" 🎉🎉🎉';
-    if (e.milestoneIndex == 0) return '¡Primer hito de "${e.goalTitle}"! Sigue así 💪';
+    if (e.isComplete)
+      return '¡Felicidades! Completaste "${e.goalTitle}" 🎉🎉🎉';
+    if (e.milestoneIndex == 0)
+      return '¡Primer hito de "${e.goalTitle}"! Sigue así 💪';
     if (e.milestoneIndex >= e.totalMilestones - 2) {
       return '¡Casi llegas a "${e.goalTitle}"! Último esfuerzo 🔥';
     }
@@ -311,6 +313,7 @@ class _MilestoneBar extends StatelessWidget {
                   ),
                 ),
                 FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
                   widthFactor: goal.progressPercentage,
                   child: Container(
                     height: 10,
@@ -334,8 +337,8 @@ class _MilestoneBar extends StatelessWidget {
                       return Stack(
                         clipBehavior: Clip.none,
                         children: List.generate(milestones, (i) {
-                          final pos = milestones > 1
-                              ? w * (i / (milestones - 1))
+                          final pos = milestones > 0
+                              ? w * ((i + 1) / milestones)
                               : w / 2;
                           return Positioned(
                             left: pos - halfDot,
@@ -349,8 +352,9 @@ class _MilestoneBar extends StatelessWidget {
                                     ? const Color(0xFFE87DA5)
                                     : Colors.white,
                                 border: Border.all(
-                                  color: const Color(0xFFE87DA5)
-                                      .withValues(alpha: 0.5),
+                                  color: const Color(
+                                    0xFFE87DA5,
+                                  ).withValues(alpha: 0.5),
                                   width: 2,
                                 ),
                               ),
@@ -416,13 +420,11 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _scaleAnim = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _scaleAnim = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     _controller.forward();
   }
 
@@ -458,10 +460,7 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    '🎉🏆🎉',
-                    style: TextStyle(fontSize: 48),
-                  ),
+                  const Text('🎉🏆🎉', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 16),
                   const Text(
                     '¡Felicidades!',
