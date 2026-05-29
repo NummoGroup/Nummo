@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import numpy as np
@@ -7,6 +8,15 @@ from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
 
 app = FastAPI()
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir todas las orígenes (localhost, 10.0.2.2, etc.)
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # Permitir todos los headers
+)
 
 # CARGAR MODELO
 model = load_model("modelo_salud.keras")
