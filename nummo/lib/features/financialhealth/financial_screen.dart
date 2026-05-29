@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'financial_provider.dart';
+import '../goals/goal_provider.dart';
 import '../transactions/transaction_provider.dart';
 import '../savings/savings_provider.dart';
 
@@ -23,6 +24,7 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
   Future<void> _calculateHealth() async {
     final transactionProvider = context.read<TransactionProvider>();
     final savingsProvider = context.read<SavingsProvider>();
+    final goalProvider = context.read<GoalProvider>();
     final healthProvider = context.read<FinancialHealthProvider>();
 
     // Obtener transacciones
@@ -40,9 +42,13 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
       }
     }
 
-    // Obtener ahorros
+    // Obtener ahorros de metas + ahorros globales (si existieran)
+    final totalAhorroDeMetas = goalProvider.goals.fold<double>(
+      0.0,
+      (sum, goal) => sum + goal.currentAmount,
+    );
     final savings = savingsProvider.savings;
-    final totalAhorro = savings.totalSaved;
+    final totalAhorro = totalAhorroDeMetas + savings.totalSaved;
 
     // Compras impulsivas - valor fijo de 5 por ahora
     const comprasImpulsivas = 5.0;
@@ -232,9 +238,16 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
                         }
                       }
 
-                      return Consumer<SavingsProvider>(
-                        builder: (context, savingsProvider, _) {
+                      return Consumer2<GoalProvider, SavingsProvider>(
+                        builder: (context, goalProvider, savingsProvider, _) {
                           final savings = savingsProvider.savings;
+                          final totalAhorroDeMetas = goalProvider.goals
+                              .fold<double>(
+                                0.0,
+                                (sum, goal) => sum + goal.currentAmount,
+                              );
+                          final totalAhorro =
+                              totalAhorroDeMetas + savings.totalSaved;
 
                           return Column(
                             children: [
@@ -254,8 +267,7 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
                               const SizedBox(height: 12),
                               _InfoCard(
                                 title: 'Ahorros',
-                                value:
-                                    '\$${savings.totalSaved.toStringAsFixed(2)}',
+                                value: '\$${totalAhorro.toStringAsFixed(2)}',
                                 icon: Icons.savings,
                                 color: Colors.blue,
                               ),
