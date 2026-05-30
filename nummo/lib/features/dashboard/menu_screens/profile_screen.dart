@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nummo/features/auth/auth_provider.dart';
 import 'package:nummo/features/auth/auth_screens/welcome_screen.dart';
+import 'package:nummo/features/dashboard/menu_screens/help_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -37,14 +38,14 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 4),
             const SizedBox(height: 40), 
 
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Configuración General',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black54, 
+                  color: Theme.of(context).textTheme.bodyLarge?.color, 
                 ),
               ),
             ),
@@ -54,7 +55,9 @@ class ProfileScreen extends StatelessWidget {
               context,
               icon: Icons.account_circle_outlined,
               title: 'Datos de la cuenta',
-              onTap: () {},
+              onTap: () {
+                //to-do: edit profile
+              },
             ),
             _buildProfileOption(
               context,
@@ -72,7 +75,12 @@ class ProfileScreen extends StatelessWidget {
               context,
               icon: Icons.help_outline,
               title: 'Centro de Ayuda',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HelpScreen()),
+                );
+              },
             ),
             
             const SizedBox(height: 32),

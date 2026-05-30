@@ -346,7 +346,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final transactions = provider.transactions.reversed.toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Transacciones')),
+      appBar: AppBar(
+        title: Text(
+          'Movimientos',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _isLoading

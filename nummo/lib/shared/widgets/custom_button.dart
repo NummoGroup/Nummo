@@ -8,20 +8,20 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Widgets de Flutter
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blueAccent, // Color del botón
+        backgroundColor: const Color.fromARGB(255, 47, 189, 255), // Color estilo Welcome Screen (Violeta moderno)
+        foregroundColor: Colors.white,
+        minimumSize: const Size(double.infinity, 52), // Altura más estilizada (no tan grande)
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20), // Bordes redondeados
+          borderRadius: BorderRadius.circular(14), // Bordes más redondeados
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Text(
-          text,
-        ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -19,6 +19,10 @@ import 'features/transactions/transaction_service.dart';
 import 'features/transactions/transaction_provider.dart';
 import 'features/transactions/transaction_model.dart';
 
+import 'features/financialhealth/financial_service.dart';
+import 'features/financialhealth/financial_provider.dart';
+import 'features/financialhealth/financial_screen.dart';
+
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/goals/goals_screen.dart';
 import 'features/savings/savings_screen.dart';
@@ -54,6 +58,7 @@ void main() async {
   final goalService = GoalService();
   final savingsService = SavingsService();
   final transactionService = HiveTransactionService();
+  final financialHealthService = FinancialHealthService();
   await transactionService.init();
 
   await dumpHiveToConsole();
@@ -67,6 +72,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => TransactionProvider(transactionService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => FinancialHealthProvider(financialHealthService),
+        ),
       ],
       child: const NummoApp(),
     ),
@@ -78,23 +86,29 @@ class NummoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Nummo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      // CORRECCIÓN: Solo una propiedad 'home'.
-      // Usamos SavingsScreen directamente para que puedas ver los cambios.
-      home: const AuthWrapper(),
-      // home: const AuthWrapper(), // Descomenta esta línea cuando quieras volver al flujo normal
-      routes: {
-        '/welcome': (context) => const WelcomeScreen(),
-        '/dashboard': (context) => const MainScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (_, ThemeMode currentMode, __) {
+        return MaterialApp(
+          title: 'Nummo',
+          debugShowCheckedModeBanner: false,
+
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode, // Esto cambia en tiempo real
+
+          home: const AuthWrapper(),
+          // home: const AuthWrapper(), // Descomenta esta línea cuando quieras volver al flujo normal
+          routes: {
+            '/welcome': (context) => const WelcomeScreen(),
+            '/dashboard': (context) => const MainScreen(),
+          },
+        );
       },
     );
   }
 }
 
-/// AuthWrapper decide si mostrar Welcome o la app principal
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -112,7 +126,6 @@ class AuthWrapper extends StatelessWidget {
   }
 }
 
-/// MainScreen con BottomNavigationBar para las pantallas principales
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -128,6 +141,7 @@ class _MainScreenState extends State<MainScreen> {
     GoalsScreen(),
     SavingsScreen(),
     TransactionsScreen(),
+    FinancialHealthScreen(),
   ];
 
   @override
@@ -145,6 +159,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long),
             label: 'Movimientos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.health_and_safety),
+            label: 'Salud',
           ),
         ],
       ),

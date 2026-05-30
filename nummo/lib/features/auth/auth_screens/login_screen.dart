@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:nummo/features/dashboard/dashboard_screen.dart';
 
@@ -64,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF8DE2FF),
+      backgroundColor: const Color(0xFF1E1E2C),
       body: SafeArea(
         child: SingleChildScrollView( // <-- Agregado para que no tire error de pantalla chica
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
