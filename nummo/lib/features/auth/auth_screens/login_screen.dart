@@ -70,13 +70,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const Spacer(),
-              
+
               CustomInputField(
                 label: 'Correo Electrónico',
                 isRequired: true,
                 controller: _emailController,
               ),
-              
+
               CustomInputField(
                 label: 'Contraseña',
                 isRequired: true,
@@ -89,7 +89,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     authProvider.error!,
-                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -98,13 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
               authProvider.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : CustomButton(
-                      text: 'Ingresar',
-                      onPressed: _handleLogin,
-                    ),
-                    
+                  : CustomButton(text: 'Ingresar', onPressed: _handleLogin),
+
               const SizedBox(height: 16),
-              
+
               CustomButton(
                 text: 'Volver',
                 onPressed: () => Navigator.pop(context),

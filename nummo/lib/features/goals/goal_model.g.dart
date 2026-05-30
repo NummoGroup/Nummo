@@ -21,9 +21,9 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       title: fields[1] as String,
       targetAmount: fields[2] as double,
       currentAmount: fields[3] as double,
-      milestonesCount: (fields[4] as num?)?.toInt() ?? 4,
-      deadline: fields[5] == null ? null : fields[5] as DateTime,
-      reachedMilestonesCount: (fields[6] as num?)?.toInt() ?? 0,
+      milestonesCount: fields[4] as int,
+      deadline: fields[5] as DateTime?,
+      reachedMilestonesCount: fields[6] as int,
     );
   }
 
