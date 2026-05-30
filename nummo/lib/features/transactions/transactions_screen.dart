@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'transaction_model.dart';
 import 'transaction_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
+import 'package:confetti/confetti.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -17,9 +19,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   String? _selectedCategory;
   bool _isLoading = true;
 
+ 
+  late ConfettiController _confettiController;
+
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 2));
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<TransactionProvider>();
       _initializeProvider(provider);
@@ -52,9 +59,30 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   @override
   void dispose() {
+    _confettiController.dispose();
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Path drawStar(Size size) {
+    double degToRad(double deg) => deg * (pi / 180.0);
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+
+    path.moveTo(size.width, halfWidth);
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step), halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep), halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
   }
 
   List<String> _categoriesFor(String type) {
@@ -85,7 +113,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       ),
                       decoration: const InputDecoration(
                         labelText: 'Cantidad',
-                        //prefixText: '$',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -147,12 +174,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         date: DateTime.now(),
                         description: _descriptionController.text.trim(),
                       );
-                      // Use the provider from the tree to ensure we call the shared instance
                       context.read<TransactionProvider>().addTransaction(
                         transaction,
                       );
+                      
                       Navigator.of(context).pop();
-                      setState(() {});
+
+                      if (type == 'income') {
+                        _confettiController.play();
+                      }
+
+                      this.setState(() {}); 
                     }
                   },
                   child: const Text('Guardar'),
@@ -352,170 +384,191 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Row(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
                     children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () => _openAddTransactionDialog('income'),
-                          icon: const Icon(
-                            Icons.arrow_downward,
-                            color: Colors.white,
-                          ),
-                          label: const Text('Ingreso'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () => _openAddTransactionDialog('expense'),
-                          icon: const Icon(
-                            Icons.arrow_upward,
-                            color: Colors.white,
-                          ),
-                          label: const Text('Gasto'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      _buildSummaryCard(
-                        'Ingresos',
-                        '\$${provider.totalIncome.toStringAsFixed(2)}',
-                        Colors.green,
-                        detail:
-                            '${provider.incomeCount} ${provider.incomeCount == 1 ? 'transacción' : 'transacciones'}',
-                      ),
-                      const SizedBox(width: 12),
-                      _buildSummaryCard(
-                        'Gastos',
-                        '\$${provider.totalExpense.toStringAsFixed(2)}',
-                        Colors.red,
-                        detail:
-                            '${provider.expenseCount} ${provider.expenseCount == 1 ? 'transacción' : 'transacciones'}',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.blue.shade400, Colors.blue.shade700],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.account_balance_wallet,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => _openAddTransactionDialog('income'), 
+                              icon: const Icon(
+                                Icons.arrow_downward,
                                 color: Colors.white,
-                                size: 28,
+                              ),
+                              label: const Text('Ingreso'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Balance Total',
-                              style: TextStyle(
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => _openAddTransactionDialog('expense'),
+                              icon: const Icon(
+                                Icons.arrow_upward,
                                 color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
                               ),
+                              label: const Text('Gasto'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          _buildSummaryCard(
+                            'Ingresos',
+                            '\$${provider.totalIncome.toStringAsFixed(2)}',
+                            Colors.green,
+                            detail:
+                                '${provider.incomeCount} ${provider.incomeCount == 1 ? 'transacción' : 'transacciones'}',
+                          ),
+                          const SizedBox(width: 12),
+                          _buildSummaryCard(
+                            'Gastos',
+                            '\$${provider.totalExpense.toStringAsFixed(2)}',
+                            Colors.red,
+                            detail:
+                                '${provider.expenseCount} ${provider.expenseCount == 1 ? 'transacción' : 'transacciones'}',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Colors.blue.shade400, Colors.blue.shade700],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '\$${provider.balance.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: transactions.isEmpty
-                        ? const Center(child: Text('No hay transacciones aún.'))
-                        : DefaultTabController(
-                            length: 3,
-                            child: Column(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                TabBar(
-                                  tabs: const [
-                                    Tab(text: 'Todas'),
-                                    Tab(text: 'Ingresos'),
-                                    Tab(text: 'Gastos'),
-                                  ],
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.account_balance_wallet,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
                                 ),
-                                Expanded(
-                                  child: TabBarView(
-                                    children: [
-                                      _buildTransactionsList(transactions),
-                                      _buildCategoriesView(
-                                        provider.incomesByCategory,
-                                        Colors.green,
-                                        transactions
-                                            .where((t) => t.isIncome)
-                                            .toList(),
-                                      ),
-                                      _buildCategoriesView(
-                                        provider.expensesByCategory,
-                                        Colors.red,
-                                        transactions
-                                            .where((t) => t.isExpense)
-                                            .toList(),
-                                      ),
-                                    ],
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Balance Total',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '\$${provider.balance.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: transactions.isEmpty
+                            ? const Center(child: Text('No hay transacciones aún.'))
+                            : DefaultTabController(
+                                length: 3,
+                                child: Column(
+                                  children: [
+                                    TabBar(
+                                      tabs: const [
+                                        Tab(text: 'Todas'),
+                                        Tab(text: 'Ingresos'),
+                                        Tab(text: 'Gastos'),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: TabBarView(
+                                        children: [
+                                          _buildTransactionsList(transactions),
+                                          _buildCategoriesView(
+                                            provider.incomesByCategory,
+                                            Colors.green,
+                                            transactions
+                                                .where((t) => t.isIncome)
+                                                .toList(),
+                                          ),
+                                          _buildCategoriesView(
+                                            provider.expensesByCategory,
+                                            Colors.red,
+                                            transactions
+                                                .where((t) => t.isExpense)
+                                                .toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+          ),
+
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirection: pi / 2, // Hacia abajo
+              maxBlastForce: 5,
+              minBlastForce: 2,
+              emissionFrequency: 0.05,
+              numberOfParticles: 20,
+              gravity: 0.1,
+              shouldLoop: false,
+              colors: const [Colors.yellow, Colors.amber, Colors.orange],
+              createParticlePath: drawStar,
+            ),
+          ),
+        ],
       ),
     );
   }
