@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "348491920572",
+    "project_id": "nummo-42981",
+    "storage_bucket": "nummo-42981.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348491920572:android:cf6718b1d707ac80810cb9",
+        "android_client_info": {
+          "package_name": "com.example.nummo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348491920572-k23o6qp94t5jgl3oia3m58oe6amh8qe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkyvDm5O1m_Xwg2Dxb5iKpSZmxHcFQLb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348491920572-k23o6qp94t5jgl3oia3m58oe6amh8qe7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

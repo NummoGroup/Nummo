@@ -41,6 +41,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (password.length < 6) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('La contraseña debe tener al menos 6 caracteres')),
+          );
+          return;
+        }
+
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Las contraseñas no coinciden')),

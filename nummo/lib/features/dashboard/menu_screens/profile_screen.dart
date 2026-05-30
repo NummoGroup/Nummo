@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:nummo/features/auth/auth_provider.dart';
+import 'package:nummo/features/auth/auth_screens/welcome_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -79,7 +82,14 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // TODO: Implementar lógica de logout
+                  // 1. Te saca instantáneamente al Welcome destruyendo el Dashboard de fondo
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                    (Route<dynamic> route) => false, 
+                  );
+
+                  // 2. Borra la sesión en Firebase en segundo plano
+                  context.read<AuthProvider>().logout();
                 },
                 icon: const Icon(Icons.logout, color: Colors.redAccent),
                 label: const Text(
