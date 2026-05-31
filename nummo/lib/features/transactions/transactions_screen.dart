@@ -211,7 +211,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Widget _buildTransactionsList(List<TransactionModel> transactions) {
     return ListView.separated(
       itemCount: transactions.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final transaction = transactions[index];
         final icon = transaction.isIncome
@@ -231,9 +231,47 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             subtitle: Text(
               '${transaction.description.isNotEmpty ? '${transaction.description}\n' : ''}${transaction.date.toIso8601String().split('T').first}',
             ),
-            trailing: Text(
-              '${transaction.isIncome ? '+' : '-'}\$${transaction.amount.toStringAsFixed(2)}',
-              style: TextStyle(color: color, fontWeight: FontWeight.bold),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${transaction.isIncome ? '+' : '-'}\$${transaction.amount.toStringAsFixed(2)}',
+                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                  onPressed: () {
+                    showDialog<void>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Eliminar transacción'),
+                        content: const Text(
+                          '¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancelar'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              context
+                                  .read<TransactionProvider>()
+                                  .deleteTransaction(transaction.id);
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('Eliminar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             isThreeLine: transaction.description.isNotEmpty,
           ),
@@ -257,7 +295,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     return ListView.separated(
       padding: const EdgeInsets.all(8),
       itemCount: sortedCategories.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final entry = sortedCategories[index];
         final category = entry.key;
@@ -346,12 +384,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final transactions = provider.transactions.reversed.toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Movimientos',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-      ),
+      appBar: AppBar(title: const Text('Transacciones')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _isLoading

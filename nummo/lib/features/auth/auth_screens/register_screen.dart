@@ -34,7 +34,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
       );
@@ -62,7 +65,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cuenta creada con éxito. Ahora inicia sesión.')),
+        const SnackBar(
+          content: Text('Cuenta creada con éxito. Ahora inicia sesión.'),
+        ),
       );
       Navigator.pop(context); // Vuelve al login
     }
@@ -91,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 40),
 
               Center(
@@ -110,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decorationColor: Colors.white.withOpacity(0.7),
                     ),
                   ),
-              ),
+                ),
               ),
               const SizedBox(height: 40),
 
@@ -151,7 +156,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
                     authProvider.error!,
-                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -166,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
 
               const SizedBox(height: 16),
-              
+
               /*CustomButton(
                 text: 'Volver',
                 onPressed: () => Navigator.pop(context),

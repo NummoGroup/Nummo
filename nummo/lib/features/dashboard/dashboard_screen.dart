@@ -85,13 +85,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).textTheme.bodyLarge?.color),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
         actions: [
           IconButton(
             icon: Icon(
               Icons.person_outline,
               color: Theme.of(context).textTheme.bodyLarge?.color,
-              ),
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -212,7 +214,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos ? 'Nuevo gasto' : 'Nuevo ingreso',
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.color,
                           side: const BorderSide(color: Colors.black26),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
