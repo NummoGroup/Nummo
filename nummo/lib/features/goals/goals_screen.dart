@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'goal_model.dart';
 import 'goal_provider.dart';
+import '../../shared/widgets/screen_wrapper.dart';
 
 class GoalsScreen extends StatelessWidget {
   const GoalsScreen({super.key});
@@ -21,7 +22,8 @@ class GoalsScreen extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text('Nueva barra'),
       ),
-      body: SafeArea(
+      body: ScreenWrapper(
+        child: SafeArea(
         child: Consumer<GoalProvider>(
           builder: (context, goalProvider, _) {
             _handleMilestoneEvent(context, goalProvider);
@@ -86,6 +88,7 @@ class GoalsScreen extends StatelessWidget {
             );
           },
         ),
+      ),
       ),
     );
   }

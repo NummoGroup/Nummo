@@ -6,6 +6,7 @@ import 'package:lottie/lottie.dart';
 
 import '../goals/goal_model.dart';
 import '../goals/goal_provider.dart';
+import '../../shared/widgets/screen_wrapper.dart';
 
 class SavingsScreen extends StatelessWidget {
   const SavingsScreen({super.key});
@@ -19,7 +20,8 @@ class SavingsScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: SafeArea(
+      body: ScreenWrapper(
+        child: SafeArea(
         child: Consumer<GoalProvider>(
           builder: (context, goalProvider, _) {
             _handleMilestoneEvent(context, goalProvider);
@@ -52,6 +54,7 @@ class SavingsScreen extends StatelessWidget {
             );
           },
         ),
+      ),
       ),
     );
   }
@@ -155,16 +158,14 @@ class _GoalMilestonesCardState extends State<_GoalMilestonesCard> {
         width: 70, // Ajustá el tamaño a lo que necesite la UI
         height: 70,
       );
-    } else if (progress < 0.8) {
-      // Neutral (30% a 80%)
+    } else if (progress >= 0.3 && progress < 1.0) {
       return Lottie.asset(
-        'assets/Piggy Bank - One Coin.json', // Nota: acá estás usando el mismo archivo que en el triste por ahora
+        'assets/Piggy Bank - Coins Out.json', 
         key: const ValueKey('neutral'),
         width: 70,
         height: 70,
       );
-    } else {
-      // Feliz (80% para arriba)
+    } else if (progress >= 1.0) {
       return Lottie.asset(
         'assets/Piggy Bank - Dancing.json',
         key: const ValueKey('feliz'),
@@ -172,6 +173,8 @@ class _GoalMilestonesCardState extends State<_GoalMilestonesCard> {
         height: 70,
       );
     }
+    // Fallback to satisfy non-nullable return type
+    return const SizedBox.shrink();
   }
 
   @override

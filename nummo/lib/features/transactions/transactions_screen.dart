@@ -4,6 +4,7 @@ import 'transaction_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import '../../shared/widgets/screen_wrapper.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -384,7 +385,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: Stack(
+      body: ScreenWrapper(
+        child: Stack(
         fit: StackFit.expand,
         children: [
           Padding(
@@ -569,6 +571,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

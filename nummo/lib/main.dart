@@ -23,6 +23,10 @@ import 'features/financialhealth/financial_service.dart';
 import 'features/financialhealth/financial_provider.dart';
 import 'features/financialhealth/financial_screen.dart';
 
+import 'features/reminders/reminder_service.dart';
+import 'features/reminders/reminder_provider.dart';
+import 'features/reminders/reminder_model.dart';
+
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/goals/goals_screen.dart';
 import 'features/savings/savings_screen.dart';
@@ -44,6 +48,7 @@ void main() async {
   ); // Asegurate que este es el que usa el typeId: 4
   Hive.registerAdapter(TransactionModelAdapter());
   Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(ReminderModelAdapter());
 
   // Crear instancias de servicios
   final authService = AuthService();
@@ -51,6 +56,7 @@ void main() async {
   final savingsService = SavingsService();
   final transactionService = HiveTransactionService();
   final financialHealthService = FinancialHealthService();
+  final reminderService = ReminderService();
   await transactionService.init();
 
   await dumpHiveToConsole();
@@ -67,6 +73,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => FinancialHealthProvider(financialHealthService),
         ),
+        ChangeNotifierProvider(create: (_) => ReminderProvider(reminderService)),
       ],
       child: const NummoApp(),
     ),

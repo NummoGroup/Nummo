@@ -4,6 +4,7 @@ import 'financial_provider.dart';
 import '../goals/goal_provider.dart';
 import '../transactions/transaction_provider.dart';
 import '../savings/savings_provider.dart';
+import '../../shared/widgets/screen_wrapper.dart';
 
 class FinancialHealthScreen extends StatefulWidget {
   const FinancialHealthScreen({super.key});
@@ -85,7 +86,8 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: SafeArea(
+      body: ScreenWrapper(
+        child: SafeArea(
         child: Consumer<FinancialHealthProvider>(
           builder: (context, healthProvider, _) {
             if (healthProvider.isLoading) {
@@ -298,6 +300,7 @@ class _FinancialHealthScreenState extends State<FinancialHealthScreen> {
             );
           },
         ),
+      ),
       ),
     );
   }
