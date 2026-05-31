@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(
+    ThemeMode.light,
+  );
   // Constantes de diseño para mantener la consistencia (Bordes premium)
   static const double _borderRadius = 16.0;
 
   // Paleta de Colores - Modo Claro
-  static const Color _lightPrimary = Color.fromARGB(255, 47, 189, 255);    // Azul profundo institucional
-  static const Color _lightSecondary = Color(0xFFF06292);  // Rosa energético para gamificación
-  static const Color _lightAccent = Color(0xFF81D4FA);     // Celeste claro para balances
-  static const Color _lightBackground = Color(0xFFF8F9FA); // Gris neutro muy limpio
+  static const Color _lightPrimary = Color.fromARGB(
+    255,
+    47,
+    189,
+    255,
+  ); // Azul profundo institucional
+  static const Color _lightSecondary = Color(
+    0xFFF06292,
+  ); // Rosa energético para gamificación
+  static const Color _lightAccent = Color(
+    0xFF81D4FA,
+  ); // Celeste claro para balances
+  static const Color _lightBackground = Color(
+    0xFFF8F9FA,
+  ); // Gris neutro muy limpio
 
   // Paleta de Colores - Modo Oscuro
   static const Color _darkPrimary = Color(0xFF9FA8DA);
@@ -22,7 +35,7 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.light,
     scaffoldBackgroundColor: _lightBackground,
-    
+
     // Configuración de la paleta semántica
     colorScheme: ColorScheme.fromSeed(
       seedColor: _lightPrimary,
@@ -33,10 +46,17 @@ class AppTheme {
       surface: Colors.white,
     ),
 
-    textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.light().textTheme).copyWith(
-      headlineMedium: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold, color: _lightPrimary),
-      titleLarge: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, color: _lightPrimary),
-    ),
+    textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.light().textTheme)
+        .copyWith(
+          headlineMedium: GoogleFonts.spaceGrotesk(
+            fontWeight: FontWeight.bold,
+            color: _lightPrimary,
+          ),
+          titleLarge: GoogleFonts.spaceGrotesk(
+            fontWeight: FontWeight.w600,
+            color: _lightPrimary,
+          ),
+        ),
 
     // AppBar limpio, plano y transparente por defecto
     appBarTheme: const AppBarTheme(
@@ -104,7 +124,6 @@ class AppTheme {
       type: BottomNavigationBarType.fixed,
       elevation: 8,
     ),
-
   );
 
   /// --- TEMA OSCURO ---
@@ -112,7 +131,7 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: _darkBackground,
-    
+
     colorScheme: ColorScheme.fromSeed(
       seedColor: _darkPrimary,
       brightness: Brightness.dark,

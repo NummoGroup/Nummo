@@ -20,13 +20,15 @@ class _HelpScreenState extends State<HelpScreen> {
   void _sendContactMessage() {
     if (_formKey.currentState!.validate()) {
       final message = _messageController.text;
-      
+
       // TODO: Integrar con paquete de email (ej. url_launcher) o servicio de backend.
       // Por ahora, simulamos el envío exitoso.
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('¡Mensaje enviado con éxito a Nummo! Gracias por tu contacto.'),
+          content: const Text(
+            '¡Mensaje enviado con éxito a Nummo! Gracias por tu contacto.',
+          ),
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
@@ -44,7 +46,7 @@ class _HelpScreenState extends State<HelpScreen> {
         title: Text(
           'Ayuda y Soporte',
           style: Theme.of(context).textTheme.titleLarge,
-          ),
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -86,25 +88,28 @@ class _HelpScreenState extends State<HelpScreen> {
               _buildExpansionTile(
                 context,
                 title: '¿Cómo añado una nueva categoría de gastos?',
-                content: 'Podés añadir o editar categorías directamente desde el formulario de nuevo gasto, o desde el menú de configuración de categorías.',
+                content:
+                    'Podés añadir o editar categorías directamente desde el formulario de nuevo gasto, o desde el menú de configuración de categorías.',
               ),
               const Divider(height: 1, indent: 16),
               _buildExpansionTile(
                 context,
                 title: '¿Qué significan las metas y las insignias?',
-                content: 'Nummo usa gamificación para ayudarte a ahorrar. Al cumplir tus objetivos mensuales de ahorro, desbloqueás medallas que mejoran tu nivel en la app.',
+                content:
+                    'Nummo usa gamificación para ayudarte a ahorrar. Al cumplir tus objetivos mensuales de ahorro, desbloqueás medallas que mejoran tu nivel en la app.',
               ),
               const Divider(height: 1, indent: 16),
               _buildExpansionTile(
                 context,
                 title: '¿Mis datos bancarios están seguros?',
-                content: '¡Completamente! Nummo es una herramienta de registro manual offline y local, lo que significa que no nos conectamos a tus cuentas de banco reales ni guardamos información en servidores externos sin tu consentimiento.',
+                content:
+                    '¡Completamente! Nummo es una herramienta de registro manual offline y local, lo que significa que no nos conectamos a tus cuentas de banco reales ni guardamos información en servidores externos sin tu consentimiento.',
               ),
             ]),
 
             const SizedBox(height: 24),
             _buildSectionTitle(context, 'Dejanos tus comentarios o dudas'),
-            
+
             // Sección del cuadro de texto unificado
             Card(
               margin: EdgeInsets.zero,
@@ -115,7 +120,9 @@ class _HelpScreenState extends State<HelpScreen> {
                   children: [
                     Text(
                       'Escribí tu pregunta, sugerencia, comentario o queja acá abajo. Te responderemos al mail de tu cuenta de Nummo.',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.black54,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -124,14 +131,21 @@ class _HelpScreenState extends State<HelpScreen> {
                       minLines: 3,
                       keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
-                        hintText: 'Ej: Hola equipo de Nummo, encontré un problema en la pantalla de metas...',
-                        hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                        hintText:
+                            'Ej: Hola equipo de Nummo, encontré un problema en la pantalla de metas...',
+                        hintStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0),
-                          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.primary,
+                            width: 2,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -167,7 +181,10 @@ class _HelpScreenState extends State<HelpScreen> {
             _buildSectionTitle(context, 'Legal'),
             _buildHelpCard([
               ListTile(
-                leading: Icon(Icons.description_outlined, color: theme.colorScheme.primary.withOpacity(0.6)),
+                leading: Icon(
+                  Icons.description_outlined,
+                  color: theme.colorScheme.primary.withOpacity(0.6),
+                ),
                 title: const Text('Términos y Condiciones'),
                 trailing: const Icon(Icons.open_in_new, size: 18),
                 onTap: () {
@@ -176,7 +193,10 @@ class _HelpScreenState extends State<HelpScreen> {
               ),
               const Divider(height: 1, indent: 56),
               ListTile(
-                leading: Icon(Icons.privacy_tip_outlined, color: theme.colorScheme.primary.withOpacity(0.6)),
+                leading: Icon(
+                  Icons.privacy_tip_outlined,
+                  color: theme.colorScheme.primary.withOpacity(0.6),
+                ),
                 title: const Text('Política de Privacidad'),
                 trailing: const Icon(Icons.open_in_new, size: 18),
                 onTap: () {
@@ -197,10 +217,10 @@ class _HelpScreenState extends State<HelpScreen> {
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-            ),
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+        ),
       ),
     );
   }
@@ -209,13 +229,15 @@ class _HelpScreenState extends State<HelpScreen> {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 
-  Widget _buildExpansionTile(BuildContext context, {required String title, required String content}) {
+  Widget _buildExpansionTile(
+    BuildContext context, {
+    required String title,
+    required String content,
+  }) {
     return ExpansionTile(
       title: Text(
         title,
@@ -223,7 +245,10 @@ class _HelpScreenState extends State<HelpScreen> {
       ),
       iconColor: Theme.of(context).colorScheme.secondary,
       collapsedIconColor: Colors.black45,
-      childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      childrenPadding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 12.0,
+      ),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
       shape: const Border(),
       collapsedShape: const Border(),
@@ -231,8 +256,8 @@ class _HelpScreenState extends State<HelpScreen> {
         Text(
           content,
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark 
-                ? Colors.white70 
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white70
                 : Colors.black,
             height: 1.4,
           ),

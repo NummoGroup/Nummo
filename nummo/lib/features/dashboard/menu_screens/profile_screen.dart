@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:nummo/features/auth/auth_provider.dart';
 import 'package:nummo/features/auth/auth_screens/welcome_screen.dart';
 import 'package:nummo/features/dashboard/menu_screens/help_screen.dart';
 
@@ -11,10 +13,7 @@ class ProfileScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi Perfil'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Mi Perfil'), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -34,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
               style: textTheme.headlineMedium?.copyWith(fontSize: 22),
             ),
             const SizedBox(height: 4),
-            const SizedBox(height: 40), 
+            const SizedBox(height: 40),
 
             Align(
               alignment: Alignment.centerLeft,
@@ -43,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color, 
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ),
@@ -80,18 +79,22 @@ class ProfileScreen extends StatelessWidget {
                 );
               },
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // --- BOTÓN DE CERRAR SESIÓN ---
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  Navigator.push(
-                    context,
+                  // 1. Te saca instantáneamente al Welcome destruyendo el Dashboard de fondo
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                  ); // Simula el cierre de sesión volviendo a la pantalla anterior (reemplazar por  función real de logout)
+                    (Route<dynamic> route) => false, 
+                  );
+
+                  // 2. Borra la sesión en Firebase en segundo plano
+                  context.read<AuthProvider>().logout();
                 },
                 icon: const Icon(Icons.logout, color: Colors.redAccent),
                 label: const Text(
@@ -129,14 +132,13 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Icon(icon, color: Theme.of(context).colorScheme.primary),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         trailing: const Icon(Icons.chevron_right, color: Colors.black38),
         onTap: onTap,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16), // Bordes redondeados heredados del tema
+          borderRadius: BorderRadius.circular(
+            16,
+          ), // Bordes redondeados heredados del tema
         ),
       ),
     );

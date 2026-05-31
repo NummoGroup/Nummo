@@ -60,6 +60,13 @@ class TransactionProvider extends ChangeNotifier {
     } catch (_) {}
   }
 
+  Future<void> deleteTransaction(String id) async {
+    await _service.deleteTransaction(id);
+    try {
+      print('TransactionProvider: deleted transaction $id');
+    } catch (_) {}
+  }
+
   List<TransactionModel> get incomes =>
       transactions.where((transaction) => transaction.isIncome).toList();
 

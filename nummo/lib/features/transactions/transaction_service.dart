@@ -5,6 +5,7 @@ abstract class TransactionService {
   Future<void> init();
   Future<void> addTransaction(TransactionModel transaction);
   Future<List<TransactionModel>> getTransactions();
+  Future<void> deleteTransaction(String id);
   Stream<List<TransactionModel>> get transactionsStream;
   Future<double> get balance;
 }
@@ -24,6 +25,14 @@ class HiveTransactionService implements TransactionService {
     // Debug log to confirm write
     try {
       print('HiveTransactionService: saved transaction ${transaction.id}');
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> deleteTransaction(String id) async {
+    await _box.delete(id);
+    try {
+      print('HiveTransactionService: deleted transaction $id');
     } catch (_) {}
   }
 

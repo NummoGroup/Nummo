@@ -45,7 +45,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      _error = e.toString();
+      _error = 'Error al iniciar sesión. Revisa tus datos.';
       _setLoading(false);
       return false;
     }
@@ -65,11 +65,47 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      _error = e.toString();
+      _error = 'Error al registrar. El correo ya existe o es inválido.';
       _setLoading(false);
       return false;
     }
   }
+
+  // --- LAS FUNCIONES NUEVAS QUE FALTABAN ESTÁN ACÁ ---
+
+  Future<bool> loginWithGoogle() async {
+    _setLoading(true);
+    _error = null;
+    try {
+      final user = await _service.loginWithGoogle();
+      if (user != null) {
+        _setLoading(false);
+        return true;
+      }
+      _setLoading(false);
+      return false; 
+    } catch (e) {
+      _error = 'Error al conectar con Google.';
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> resetPassword(String email) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      await _service.resetPassword(email);
+      _setLoading(false);
+      return true; 
+    } catch (e) {
+      _error = 'No se encontró una cuenta con ese correo.';
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  // ----------------------------------------------------
 
   Future<void> logout() async {
     await _service.logout();

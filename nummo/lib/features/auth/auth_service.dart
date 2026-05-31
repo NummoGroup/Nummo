@@ -1,65 +1,96 @@
 import 'dart:async';
-import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'user_model.dart';
 
 class AuthService {
-  static const String _boxName = 'users';
-  static const String _currentUserKey = 'current_user';
-  late Box<User> _box;
-  final _uuid = const Uuid();
+  final fb_auth.FirebaseAuth _firebaseAuth = fb_auth.FirebaseAuth.instance;
+  
+  // SOLUCIÓN 1: Ahora se exige llamar a la instancia sin paréntesis
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   final _authController = StreamController<User?>.broadcast();
   Stream<User?> get authStream => _authController.stream;
 
   Future<void> init() async {
-    _box = await Hive.openBox<User>(_boxName);
-    final currentUser = _box.get(_currentUserKey);
-    _authController.add(currentUser);
+    _firebaseAuth.authStateChanges().listen((firebaseUser) {
+      _authController.add(_userFromFirebase(firebaseUser));
+    });
+  }
+
+  User? _userFromFirebase(fb_auth.User? firebaseUser) {
+    if (firebaseUser == null) return null;
+    return User(
+      id: firebaseUser.uid,
+      email: firebaseUser.email ?? '',
+      name: firebaseUser.displayName ?? 'Usuario',
+      balance: 0.0,
+      password: '', 
+    );
   }
 
   Future<User?> login(String email, String password) async {
-    final user = _box.values.cast<User?>().firstWhere(
-      (u) => u?.email == email,
-      orElse: () => null,
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
     );
-    
-    // Verificamos si existe Y si la contraseña coincide
-    if (user != null && user.password == password) {
-      await _box.put(_currentUserKey, user.copyWith());
-      _authController.add(user);
-      return user;
-    }
-    return null; 
+    return _userFromFirebase(credential.user);
   }
 
   Future<User?> register(String email, String password, String name) async {
-    final exists = _box.values.any((u) => u.email == email);
-    if (exists) return null;
-
-    final user = User(id: _uuid.v4(), email: email, name: name, password: password);
-    
-    // Guarda el usuario, pero NO inicia sesión automáticamente
-    await _box.put(user.id, user);
-    
-    return user;
+    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await credential.user?.updateDisplayName(name);
+    return _userFromFirebase(credential.user);
   }
 
-  Future<void> logout() async {
-    await _box.delete(_currentUserKey);
-    _authController.add(null);
+  Future<void> resetPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
-  User? get currentUser => _box.get(_currentUserKey);
-  bool get isAuthenticated => currentUser != null;
+  // --- GOOGLE SIGN-IN REAL (Adaptado a las reglas de la versión 7+) ---
+  Future<User?> loginWithGoogle() async {
+    try {
+      // Se requiere inicializar antes de arrancar
+      await _googleSignIn.initialize();
 
-  Future<void> updateUser(User user) async {
-    await _box.put(user.id, user);
-    if (currentUser?.id == user.id) {
-      await _box.put(_currentUserKey, user.copyWith());
-      _authController.add(user);
+      // SOLUCIÓN 2: Ahora el método se llama authenticate()
+      final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+      if (googleUser == null) return null; // El usuario canceló la ventana
+
+      // SOLUCIÓN 3: Pedimos el accessToken por separado para que Firebase lo acepte
+      final clientAuth = await googleUser.authorizationClient?.authorizeScopes(['email', 'profile']);
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final fb_auth.OAuthCredential credential = fb_auth.GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: clientAuth?.accessToken,
+      );
+
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      return _userFromFirebase(userCredential.user);
+    } catch (e) {
+      return null;
     }
   }
+
+  // LOGOUT REAL (Sin bloqueos)
+  Future<void> logout() async {
+    // Apagamos Firebase primero, que es el que de verdad importa
+    await _firebaseAuth.signOut(); 
+    
+    // Y le decimos a Google que intente cerrar, pero sin bloquear la app
+    try {
+      _googleSignIn.signOut(); 
+    } catch (e) {
+      // Silenciamos cualquier error de Google
+    }
+  }
+
+  User? get currentUser => _userFromFirebase(_firebaseAuth.currentUser);
+  bool get isAuthenticated => currentUser != null;
 
   Future<void> dispose() async {
     await _authController.close();
