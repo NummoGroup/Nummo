@@ -432,14 +432,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
-      appBar: AppBar(title: const Text('Transacciones')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Row(
                     children: [
                       Row(
                         children: [
