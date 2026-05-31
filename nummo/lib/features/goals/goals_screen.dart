@@ -11,10 +11,7 @@ class GoalsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Metas',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        title: Text('Metas', style: Theme.of(context).textTheme.titleLarge),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateGoalDialog(context),
@@ -126,8 +123,10 @@ class GoalsScreen extends StatelessWidget {
   }
 
   String _milestonePopupMessage(MilestoneEvent e) {
-    if (e.isComplete) return '¡Felicidades! Completaste "${e.goalTitle}" 🎉🎉🎉';
-    if (e.milestoneIndex == 0) return '¡Primer hito de "${e.goalTitle}"! Sigue así 💪';
+    if (e.isComplete)
+      return '¡Felicidades! Completaste "${e.goalTitle}" 🎉🎉🎉';
+    if (e.milestoneIndex == 0)
+      return '¡Primer hito de "${e.goalTitle}"! Sigue así 💪';
     if (e.milestoneIndex >= e.totalMilestones - 2) {
       return '¡Casi llegas a "${e.goalTitle}"! Último esfuerzo 🔥';
     }
@@ -472,13 +471,11 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _scaleAnim = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _scaleAnim = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     _controller.forward();
   }
 
@@ -514,10 +511,7 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    '🎉🏆🎉',
-                    style: TextStyle(fontSize: 48),
-                  ),
+                  const Text('🎉🏆🎉', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 16),
                   const Text(
                     '¡Felicidades!',

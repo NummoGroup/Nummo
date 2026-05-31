@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 //import 'package:google_fonts/google_fonts.dart';
 
 import 'package:nummo/shared/widgets/custom_button.dart';
-import 'package:nummo/features/auth/auth_screens/register_screen.dart'; 
-import 'package:nummo/features/auth/auth_screens/login_screen.dart'; 
+import 'package:nummo/features/auth/auth_screens/register_screen.dart';
+import 'package:nummo/features/auth/auth_screens/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -19,11 +19,12 @@ class WelcomeScreen extends StatelessWidget {
           builder: (context, constraints) {
             return SingleChildScrollView(
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 24.0,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,7 +37,8 @@ class WelcomeScreen extends StatelessWidget {
                             height: size.height * 0.15,
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primaryContainer.withOpacity(0.2),
+                              color: theme.colorScheme.primaryContainer
+                                  .withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Image.asset(
@@ -66,7 +68,9 @@ class WelcomeScreen extends StatelessWidget {
                             'Sincronizá tus finanzas, alcanzá tus metas.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.onBackground.withOpacity(0.7),
+                              color: theme.colorScheme.onBackground.withOpacity(
+                                0.7,
+                              ),
                             ),
                           ),
                         ],
@@ -83,7 +87,9 @@ class WelcomeScreen extends StatelessWidget {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
                               );
                             },
                             style: FilledButton.styleFrom(
@@ -101,18 +107,23 @@ class WelcomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           // Botón de Registro (Secundario / Outlined)
                           OutlinedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterScreen(),
+                                ),
                               );
                             },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: BorderSide(color: theme.colorScheme.primary, width: 2),
+                              side: BorderSide(
+                                color: theme.colorScheme.primary,
+                                width: 2,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),

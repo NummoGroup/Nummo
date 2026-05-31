@@ -5,14 +5,14 @@ class CustomInputField extends StatelessWidget {
   final String label;
   final bool isRequired;
   final bool isPassword;
-  final Widget? suffixIcon; 
+  final Widget? suffixIcon;
   final TextEditingController? controller;
 
   const CustomInputField({
     super.key,
     required this.label,
     this.isRequired = false,
-    this.isPassword = false, 
+    this.isPassword = false,
     this.suffixIcon,
     this.controller,
   });
@@ -34,7 +34,10 @@ class CustomInputField extends StatelessWidget {
               if (isRequired)
                 const TextSpan(
                   text: ' *',
-                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
             ],
           ),
@@ -44,19 +47,25 @@ class CustomInputField extends StatelessWidget {
         TextField(
           controller: controller,
           obscureText: isPassword,
-          style: const TextStyle(color: Colors.black87), 
+          style: const TextStyle(color: Colors.black87),
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color.fromARGB(196, 200, 225, 236), 
+            fillColor: const Color.fromARGB(196, 200, 225, 236),
             suffixIcon: suffixIcon,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none, 
+              borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14), 
-              borderSide: const BorderSide(color: Color.fromARGB(255, 47, 189, 255), width: 2),
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Color.fromARGB(255, 47, 189, 255),
+                width: 2,
+              ),
             ),
           ),
         ),

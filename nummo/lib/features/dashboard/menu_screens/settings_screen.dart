@@ -23,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(
           'Configuración',
           style: Theme.of(context).textTheme.titleLarge,
-          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -33,12 +33,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             children: [
               ListTile(
-                leading: Icon(Icons.person_outline, color: theme.colorScheme.primary),
+                leading: Icon(
+                  Icons.person_outline,
+                  color: theme.colorScheme.primary,
+                ),
                 title: const Text('Editar Perfil'),
                 subtitle: const Text('Nombre, correo y avatar'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileScreen(),
+                    ),
+                  );
                 },
               ),
               const Divider(height: 1, indent: 56),
@@ -53,7 +61,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),*/
               const Divider(height: 1, indent: 56),
               ListTile(
-                leading: Icon(Icons.monetization_on_outlined, color: theme.colorScheme.primary),
+                leading: Icon(
+                  Icons.monetization_on_outlined,
+                  color: theme.colorScheme.primary,
+                ),
                 title: const Text('Moneda Principal'),
                 subtitle: const Text('ARS (\$)'),
                 trailing: const Icon(Icons.chevron_right),
@@ -70,7 +81,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             children: [
               SwitchListTile(
-                secondary: Icon(Icons.notifications_none, color: theme.colorScheme.primary),
+                secondary: Icon(
+                  Icons.notifications_none,
+                  color: theme.colorScheme.primary,
+                ),
                 title: const Text('Notificaciones Diarias'),
                 subtitle: const Text('Recordatorios de registro de gastos'),
                 value: _notificationsEnabled,
@@ -96,15 +110,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),*/
               const Divider(height: 1, indent: 56),
               SwitchListTile(
-                secondary: Icon(Icons.dark_mode_outlined, color: theme.colorScheme.primary),
+                secondary: Icon(
+                  Icons.dark_mode_outlined,
+                  color: theme.colorScheme.primary,
+                ),
                 title: const Text('Modo Oscuro'),
                 subtitle: const Text('Forzar aspecto oscuro en la interfaz'),
-                value: AppTheme.themeNotifier.value == ThemeMode.dark, 
+                value: AppTheme.themeNotifier.value == ThemeMode.dark,
                 activeColor: theme.colorScheme.secondary,
                 onChanged: (bool value) {
-                  AppTheme.themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
-                  
-                  setState(() {}); 
+                  AppTheme.themeNotifier.value = value
+                      ? ThemeMode.dark
+                      : ThemeMode.light;
+
+                  setState(() {});
                 },
               ),
             ],
@@ -126,8 +145,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),*/
               const Divider(height: 1, indent: 56),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                title: const Text('Eliminar Datos', style: TextStyle(color: Colors.redAccent)),
+                leading: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.redAccent,
+                ),
+                title: const Text(
+                  'Eliminar Datos',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
                 subtitle: const Text('Borrar todo el historial local'),
                 onTap: () {
                   // TODO: ACCIÓN - Mostrar diálogo de confirmación crítica
@@ -155,21 +180,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-            ),
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+        ),
       ),
     );
   }
 
-  Widget _buildSettingsCard(BuildContext context, {required List<Widget> children}) {
+  Widget _buildSettingsCard(
+    BuildContext context, {
+    required List<Widget> children,
+  }) {
     return Card(
       margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias, // Evita que los bordes del ListTile sobresalgan del Card
-      child: Column(
-        children: children,
-      ),
+      clipBehavior: Clip
+          .antiAlias, // Evita que los bordes del ListTile sobresalgan del Card
+      child: Column(children: children),
     );
   }
 }
