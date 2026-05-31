@@ -9,6 +9,7 @@ import 'menu_screens/help_screen.dart';
 import 'menu_screens/profile_screen.dart';
 import 'menu_screens/reminders_screen.dart';
 import 'menu_screens/settings_screen.dart';
+import '/shared/widgets/screen_wrapper.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -103,9 +104,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {},
-        child: SingleChildScrollView(
+      body: ScreenWrapper(
+        child: RefreshIndicator(
+          onRefresh: () async {},
+          child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -121,13 +123,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos = true;
                         });
                       },
-                      child: Text(
-                        'Gastos',
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                          fontWeight: _mostrarGastos ? FontWeight.bold : FontWeight.w500,
+                          color: _mostrarGastos
+                              ? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black
+                              : (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black).withValues(alpha: 0.4),
                         ),
+                        child: const Text('Gastos'),
                       ),
                     ),
                     GestureDetector(
@@ -136,13 +141,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos = false;
                         });
                       },
-                      child: Text(
-                        'Ingresos',
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                          fontWeight: !_mostrarGastos ? FontWeight.bold : FontWeight.w500,
+                          color: !_mostrarGastos
+                              ? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black
+                              : (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black).withValues(alpha: 0.4),
                         ),
+                        child: const Text('Ingresos'),
                       ),
                     ),
                   ],
@@ -297,6 +305,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -392,7 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Menú Nummo',
+                  'Menú',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

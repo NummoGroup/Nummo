@@ -1,8 +1,12 @@
+import 'dart:math';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../goals/goal_model.dart';
 import '../goals/goal_provider.dart';
+import '../../shared/widgets/screen_wrapper.dart';
 
 class SavingsScreen extends StatelessWidget {
   const SavingsScreen({super.key});
@@ -16,7 +20,8 @@ class SavingsScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      body: SafeArea(
+      body: ScreenWrapper(
+        child: SafeArea(
         child: Consumer<GoalProvider>(
           builder: (context, goalProvider, _) {
             _handleMilestoneEvent(context, goalProvider);
@@ -49,6 +54,7 @@ class SavingsScreen extends StatelessWidget {
             );
           },
         ),
+      ),
       ),
     );
   }
@@ -89,10 +95,12 @@ class SavingsScreen extends StatelessWidget {
   }
 
   String _milestonePopupMessage(MilestoneEvent e) {
-    if (e.isComplete)
+    if (e.isComplete) {
       return '¡Felicidades! Completaste "${e.goalTitle}" 🎉🎉🎉';
-    if (e.milestoneIndex == 0)
+    }
+    if (e.milestoneIndex == 0) {
       return '¡Primer hito de "${e.goalTitle}"! Sigue así 💪';
+    }
     if (e.milestoneIndex >= e.totalMilestones - 2) {
       return '¡Casi llegas a "${e.goalTitle}"! Último esfuerzo 🔥';
     }
@@ -131,6 +139,44 @@ class _GoalMilestonesCardState extends State<_GoalMilestonesCard> {
     super.dispose();
   }
 
+  Widget _buildPigMascot(double progress) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+      child: _getLottieForProgress(progress),
+    );
+  }
+
+  Widget _getLottieForProgress(double progress) {
+    if (progress < 0.3) {
+      // Triste (menos de 30%)
+      return Lottie.asset(
+        'assets/Piggy Bank - One Coin.json',
+        key: const ValueKey('triste'), // El Key es vital para el AnimatedSwitcher
+        width: 70, // Ajustá el tamaño a lo que necesite la UI
+        height: 70,
+      );
+    } else if (progress >= 0.3 && progress < 1.0) {
+      return Lottie.asset(
+        'assets/Piggy Bank - Coins Out.json', 
+        key: const ValueKey('neutral'),
+        width: 70,
+        height: 70,
+      );
+    } else if (progress >= 1.0) {
+      return Lottie.asset(
+        'assets/Piggy Bank - Dancing.json',
+        key: const ValueKey('feliz'),
+        width: 70,
+        height: 70,
+      );
+    }
+    // Fallback to satisfy non-nullable return type
+    return const SizedBox.shrink();
+  }
+
   @override
   Widget build(BuildContext context) {
     final goal = widget.goal;
@@ -154,6 +200,10 @@ class _GoalMilestonesCardState extends State<_GoalMilestonesCard> {
         children: [
           Row(
             children: [
+              // AGREGAMOS EL CHANCHO AL PRINCIPIO DE LA FILA
+              _buildPigMascot(progress),
+              const SizedBox(width: 12),
+              
               Expanded(
                 child: Text(
                   goal.title,
@@ -412,6 +462,8 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
   late Animation<double> _fadeAnim;
+  
+  late ConfettiController _confettiController;
 
   @override
   void initState() {
@@ -425,96 +477,152 @@ class _CelebrationDialogState extends State<_CelebrationDialog>
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    _confettiController.play();
+    
     _controller.forward();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _confettiController.dispose(); 
     super.dispose();
+  }
+
+  // Función matemática de la estrellita
+  Path drawStar(Size size) {
+    double degToRad(double deg) => deg * (pi / 180.0);
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+    
+    path.moveTo(size.width, halfWidth);
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step), halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep), halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      child: Center(
-        child: FadeTransition(
-          opacity: _fadeAnim,
-          child: ScaleTransition(
-            scale: _scaleAnim,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40),
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('🎉🏆🎉', style: TextStyle(fontSize: 48)),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '¡Felicidades!',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF1E3A5F),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Center(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: ScaleTransition(
+                  scale: _scaleAnim,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('🎉🏆🎉', style: TextStyle(fontSize: 48)),
+                        const SizedBox(height: 16),
+                        const Text(
+                          '¡Felicidades!',
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF1E3A5F),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Completaste "${widget.goalTitle}"',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF5BA4CF),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '¡Has alcanzado tu meta! Sigue así.🌟',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black.withValues(alpha: 0.6),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<GoalProvider>().dismissCelebration();
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF5BA4CF),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '¡Seguir así!',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Completaste "${widget.goalTitle}"',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF5BA4CF),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '¡Has alcanzado tu meta! Sigue así.🌟',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<GoalProvider>().dismissCelebration();
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5BA4CF),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      '¡Seguir así!',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            
+          
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: pi / 2, 
+                maxBlastForce: 6, 
+                minBlastForce: 3,
+                emissionFrequency: 0.05,
+                numberOfParticles: 25, 
+                gravity: 0.15,
+                shouldLoop: false,
+                colors: const [
+                  Colors.yellow, 
+                  Colors.amber, 
+                  Colors.orange, 
+                  Colors.pinkAccent 
+                ],
+                createParticlePath: drawStar, 
+              ),
+            ),
+          ],
         ),
       ),
     );

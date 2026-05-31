@@ -11,6 +11,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
+  String _selectedCurrency = 'ARS (\$)';
+  final List<String> _currencies = ['ARS (\$)', 'USD (\$)', 'EUR (€)'];
   //bool _biometricEnabled = false;
   //bool _darkModeEnabled = false;
 
@@ -66,11 +68,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: theme.colorScheme.primary,
                 ),
                 title: const Text('Moneda Principal'),
-                subtitle: const Text('ARS (\$)'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // TODO: ACCIÓN - Abre un BottomSheet/Dialog para cambiar tipo de moneda
-                },
+                subtitle: const Text('Elige tu divisa'),
+                trailing: DropdownButton<String>(
+                  value: _selectedCurrency,
+                  underline: const SizedBox(),
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: _currencies.map((String currency) {
+                    return DropdownMenuItem<String>(
+                      value: currency,
+                      child: Text(
+                        currency,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedCurrency = newValue;
+                      });
+                    }
+                  },
+                ),
               ),
             ],
           ),
