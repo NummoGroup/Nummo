@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nummo/main.dart';
 //import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:nummo/features/dashboard/dashboard_screen.dart';
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success && mounted) {
       // SOLUCIÓN AL BUCLE: Destruye el login/welcome y setea el Dashboard como nueva raíz limpia
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
         (Route<dynamic> route) => false,
       );
     }

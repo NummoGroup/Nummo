@@ -9,8 +9,11 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final user = context.watch<AuthProvider>().user;
+    final displayName = (user?.name != null && user!.name.isNotEmpty) 
+        ? user.name 
+        : (user?.email ?? 'Usuario Nummo');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Mi Perfil'), centerTitle: true),
@@ -20,16 +23,16 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // --- HEADER DEL PERFIL (Limpio y directo) ---
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
               backgroundColor: Colors.black12,
               backgroundImage: NetworkImage(
-                'https://ui-avatars.com/api/?name=Usuario+Nummo&background=1A237E&color=fff&size=128',
+                'https://ui-avatars.com/api/?name=${Uri.encodeComponent(displayName)}&background=1A237E&color=fff&size=128',
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Nombre Usuario',
+              displayName,
               style: textTheme.headlineMedium?.copyWith(fontSize: 22),
             ),
             const SizedBox(height: 4),
