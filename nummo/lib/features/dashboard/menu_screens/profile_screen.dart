@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nummo/features/auth/auth_provider.dart';
 import 'package:nummo/features/auth/auth_screens/welcome_screen.dart';
 import 'package:nummo/features/dashboard/menu_screens/help_screen.dart';
+import 'package:nummo/features/dashboard/menu_screens/edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
         : (user?.email ?? 'Usuario Nummo');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mi Perfil'), centerTitle: true),
+      appBar: AppBar(title: Text('Mi Perfil', style: textTheme.titleLarge?.copyWith(fontSize: 20)), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -56,10 +57,13 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.account_circle_outlined,
               title: 'Datos de la cuenta',
               onTap: () {
-                //to-do: edit profile
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                );
               },
             ),
-            _buildProfileOption(
+            /*_buildProfileOption(
               context,
               icon: Icons.notifications_none,
               title: 'Notificaciones y Recordatorios',
@@ -70,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.security,
               title: 'Privacidad y Seguridad',
               onTap: () {},
-            ),
+            ),*/
             _buildProfileOption(
               context,
               icon: Icons.help_outline,

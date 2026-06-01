@@ -123,16 +123,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos = true;
                         });
                       },
-                      child: AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        style: TextStyle(
+                      child: Text(
+                        'Gastos',
+                        style: (Theme.of(context).textTheme.titleLarge ?? const TextStyle()).copyWith(
                           fontSize: 24,
                           fontWeight: _mostrarGastos ? FontWeight.bold : FontWeight.w500,
                           color: _mostrarGastos
                               ? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black
                               : (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black).withValues(alpha: 0.4),
                         ),
-                        child: const Text('Gastos'),
                       ),
                     ),
                     GestureDetector(
@@ -141,16 +140,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _mostrarGastos = false;
                         });
                       },
-                      child: AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        style: TextStyle(
+                      child: Text(
+                        'Ingresos',
+                        style: (Theme.of(context).textTheme.titleLarge ?? const TextStyle()).copyWith(
                           fontSize: 24,
                           fontWeight: !_mostrarGastos ? FontWeight.bold : FontWeight.w500,
                           color: !_mostrarGastos
                               ? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black
                               : (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black).withValues(alpha: 0.4),
                         ),
-                        child: const Text('Ingresos'),
                       ),
                     ),
                   ],

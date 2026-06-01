@@ -50,6 +50,22 @@ class AuthService {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
+  Future<void> updateProfileName(String name) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await user.updateDisplayName(name);
+      await user.reload(); // Aseguramos que Firebase refresque el usuario
+      _authController.add(_userFromFirebase(_firebaseAuth.currentUser));
+    }
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await user.updatePassword(newPassword);
+    }
+  }
+
   // --- GOOGLE SIGN-IN REAL (Adaptado a las reglas de la versión 7+) ---
   Future<User?> loginWithGoogle() async {
     try {

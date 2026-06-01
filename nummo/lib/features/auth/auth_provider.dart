@@ -105,6 +105,37 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateProfileName(String name) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      await _service.updateProfileName(name);
+      if (_user != null) {
+        _user = _user!.copyWith(name: name); // Actualiza la UI inmediatamente
+      }
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _error = 'Error al actualizar el nombre.';
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> updatePassword(String newPassword) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      await _service.updatePassword(newPassword);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _error = 'Error al actualizar la contraseña. Puede que necesites volver a iniciar sesión.';
+      _setLoading(false);
+      return false;
+    }
+  }
+
   // ----------------------------------------------------
 
   Future<void> logout() async {

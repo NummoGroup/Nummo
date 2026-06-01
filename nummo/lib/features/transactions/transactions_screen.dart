@@ -431,165 +431,171 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             padding: const EdgeInsets.all(16),
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _openAddTransactionDialog('income'), 
-                              icon: const Icon(
-                                Icons.arrow_downward,
-                                color: Colors.white,
-                              ),
-                              label: const Text('Ingreso'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _openAddTransactionDialog('expense'),
-                              icon: const Icon(
-                                Icons.arrow_upward,
-                                color: Colors.white,
-                              ),
-                              label: const Text('Gasto'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          _buildSummaryCard(
-                            'Ingresos',
-                            '\$${provider.totalIncome.toStringAsFixed(2)}',
-                            Colors.green,
-                            detail:
-                                '${provider.incomeCount} ${provider.incomeCount == 1 ? 'transacción' : 'transacciones'}',
-                          ),
-                          const SizedBox(width: 12),
-                          _buildSummaryCard(
-                            'Gastos',
-                            '\$${provider.totalExpense.toStringAsFixed(2)}',
-                            Colors.red,
-                            detail:
-                                '${provider.expenseCount} ${provider.expenseCount == 1 ? 'transacción' : 'transacciones'}',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Colors.blue.shade400, Colors.blue.shade700],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
+                : NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      return [
+                        SliverToBoxAdapter(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _openAddTransactionDialog('income'), 
+                                      icon: const Icon(
+                                        Icons.arrow_downward,
+                                        color: Colors.white,
+                                      ),
+                                      label: const Text('Ingreso'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.account_balance_wallet,
-                                    color: Colors.white,
-                                    size: 28,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _openAddTransactionDialog('expense'),
+                                      icon: const Icon(
+                                        Icons.arrow_upward,
+                                        color: Colors.white,
+                                      ),
+                                      label: const Text('Gasto'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Text(
-                                  'Balance Total',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '\$${provider.balance.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Expanded(
-                        child: transactions.isEmpty
-                            ? const Center(child: Text('No hay transacciones aún.'))
-                            : DefaultTabController(
-                                length: 3,
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  _buildSummaryCard(
+                                    'Ingresos',
+                                    '\$${provider.totalIncome.toStringAsFixed(2)}',
+                                    Colors.green,
+                                    detail:
+                                        '${provider.incomeCount} ${provider.incomeCount == 1 ? 'transacción' : 'transacciones'}',
+                                  ),
+                                  const SizedBox(width: 12),
+                                  _buildSummaryCard(
+                                    'Gastos',
+                                    '\$${provider.totalExpense.toStringAsFixed(2)}',
+                                    Colors.red,
+                                    detail:
+                                        '${provider.expenseCount} ${provider.expenseCount == 1 ? 'transacción' : 'transacciones'}',
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [Colors.blue.shade400, Colors.blue.shade700],
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.3),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    TabBar(
-                                      tabs: const [
-                                        Tab(text: 'Todas'),
-                                        Tab(text: 'Ingresos'),
-                                        Tab(text: 'Gastos'),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: const Icon(
+                                            Icons.account_balance_wallet,
+                                            color: Colors.white,
+                                            size: 28,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          'Balance Total',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    Expanded(
-                                      child: TabBarView(
-                                        children: [
-                                          _buildTransactionsList(transactions),
-                                          _buildCategoriesView(
-                                            provider.incomesByCategory,
-                                            Colors.green,
-                                            transactions
-                                                .where((t) => t.isIncome)
-                                                .toList(),
-                                          ),
-                                          _buildCategoriesView(
-                                            provider.expensesByCategory,
-                                            Colors.red,
-                                            transactions
-                                                .where((t) => t.isExpense)
-                                                .toList(),
-                                          ),
-                                        ],
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      '\$${provider.balance.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 36,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                      ),
-                    ],
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
+                    body: transactions.isEmpty
+                        ? const Center(child: Text('No hay transacciones aún.'))
+                        : DefaultTabController(
+                            length: 3,
+                            child: Column(
+                              children: [
+                                const TabBar(
+                                  tabs: [
+                                    Tab(text: 'Todas'),
+                                    Tab(text: 'Ingresos'),
+                                    Tab(text: 'Gastos'),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: TabBarView(
+                                    children: [
+                                      _buildTransactionsList(transactions),
+                                      _buildCategoriesView(
+                                        provider.incomesByCategory,
+                                        Colors.green,
+                                        transactions
+                                            .where((t) => t.isIncome)
+                                            .toList(),
+                                      ),
+                                      _buildCategoriesView(
+                                        provider.expensesByCategory,
+                                        Colors.red,
+                                        transactions
+                                            .where((t) => t.isExpense)
+                                            .toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                   ),
           ),
 
